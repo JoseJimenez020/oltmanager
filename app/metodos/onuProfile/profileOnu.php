@@ -1,11 +1,11 @@
 <?php
-require_once(__DIR__ . '/../../snmp/oltSnmp.php');
-require_once(__DIR__ . '/../../snmp/profileOnu.php');
+require_once(__DIR__ . '/../snmp/oltSnmp.php');
+require_once(__DIR__ . '/../snmp/profileOnu.php');
 require_once(__DIR__ . '/onuProfileController.php');
-require_once(__DIR__ . '/../../speedProfile/speedProfileController.php');
-require_once(__DIR__ . '/../../oltProfile/oltProfileController.php');
-require_once(__DIR__ . '/../../vlanProfile/vlanProfileController.php');
-require_once(__DIR__ . '/../../potencia/potenciaController.php');
+require_once(__DIR__ . '/../speedProfile/speedProfileController.php');
+require_once(__DIR__ . '/../oltProfile/oltProfileController.php');
+require_once(__DIR__ . '/../vlanProfile/vlanProfileController.php');
+require_once(__DIR__ . '/../potencia/potenciaController.php');
 
 class profileOnu
 {
@@ -131,9 +131,24 @@ class profileOnu
 
         $n = [];
         for ($i = 0; $i < count($r); $i++) {
+            $indexOid     = $r[$i]['index'];
+            $tcontIndex   = $r[$i]['tcont'];
+            $gemportIndex = $r[$i]['gemport'];
+
+            // El index SNMP no existe en la tabla gpon: la ONU no está registrada
+            // en la DB todavía. Se omite para no generar el Warning.
+            if (!isset($g[$indexOid])) {
+                continue;
+            }
+
+            // El speed profile no existe en la DB para esta zona todavía.
+            if (!isset($up[$tcontIndex]) || !isset($down[$gemportIndex])) {
+                continue;
+            }
+
             $n[] = [
-                'index'   => $r[$i]['index'] . '.' . $r[$i]['pos'],
-                'gpon'    => $g[$r[$i]['index']][0],
+                'index'   => $indexOid . '.' . $r[$i]['pos'],
+                'gpon'    => $g[$indexOid][0],
                 'pos'     => $r[$i]['pos'],
                 'name'    => $r[$i]['name'],
                 'model'   => $r[$i]['model'],
@@ -142,8 +157,8 @@ class profileOnu
                 'rx'      => $r[$i]['rx'],
                 'status'  => $r[$i]['status'],
                 'sn'      => $r[$i]['sn'],
-                'tcont'   => $up[$r[$i]['tcont']][0],
-                'gemport' => $down[$r[$i]['gemport']][0],
+                'tcont'   => $up[$tcontIndex][0],
+                'gemport' => $down[$gemportIndex][0],
                 'olt'     => $zona,
             ];
         }
@@ -156,9 +171,9 @@ class profileOnu
         $resultado = ['existe' => [], 'migracion' => [], 'nuevo' => []];
 
         foreach ($onu as $n) {
-            $serial    = $n['sn'];
+            $serial     = $n['sn'];
             $indexNuevo = $n['index'];
-            $index     = @$sn[$serial];
+            $index      = @$sn[$serial];
 
             if (isset($index)) {
                 $indexViejo = $index['IndexOid'] . '.' . $index['OntPos'];
