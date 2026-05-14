@@ -211,18 +211,20 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-  var formModal = $("#formModalOLT"); // Modal del formulario OLT
+  var formModal = $("#formModalOLT");
 
-  // Ocultar modal al cargar la página
+  // Ocultar modal al cargar
   formModal.hide();
 
   // Abrir modal al hacer clic en "Add OLT"
   $("#openFormModalOLT").on("click", function () {
+    // Limpiar el formulario antes de abrir
+    $("#formModalOLT form")[0].reset();
     formModal.fadeIn();
   });
 
-  // Cerrar modal al hacer clic en "Cancel" o fuera del modal
-  $("#closeFormModalOLT, #formModalOLT").on("click", function (event) {
+  // Cerrar modal con "Cancel" o clic fuera
+  $("#closeFormModal, #formModalOLT").on("click", function (event) {
     if (
       event.target === formModal[0] ||
       $(event.target).hasClass("cancel-btn")
@@ -231,13 +233,152 @@ $(document).ready(function () {
     }
   });
 
-  // Acción para el botón "Test Connection"
-  $(".test-connection").on("click", function () {
-    alert(
-      "Testing connection... (Aquí puedes agregar la lógica para la prueba)"
-    );
+  // ── SUBMIT: registrar nueva OLT ──────────────────────────────────
+  $("#formModalOLT form").on("submit", async function (e) {
+    e.preventDefault();
+
+    const form     = this;
+    const formData = new FormData(form);
+    const payload  = {};
+    formData.forEach((value, key) => { payload[key] = value.trim(); });
+
+    // Validación básica en cliente
+    const required = [
+      "olt_name", "olt_ip", "telnet_port",
+      "telnet_user", "telnet_password",
+      "snmp_ro", "snmp_rw", "snmp_port",
+      "hardware_version", "software_version"
+    ];
+
+    for (const field of required) {
+      if (!payload[field]) {
+        Swal.fire({
+          icon: "warning",
+          title: "Campo requerido",
+          text: `El campo "${field.replace(/_/g, " ")}" es obligatorio.`,
+          background: "#1a1a1a",
+          color: "#fff",
+        });
+        return;
+      }
+    }
+
+    // Loading
+    Swal.fire({
+      title: "Registrando OLT…",
+      text: "Por favor espera",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => Swal.showLoading(),
+      background: "#1a1a1a",
+      color: "#fff",
+    });
+
+    try {
+      const response = await fetch("../api/oltProfile.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 409) {
+        Swal.fire({
+          icon: "warning",
+          title: "OLT duplicada",
+          text: data.message,
+          background: "#1a1a1a",
+          color: "#fff",
+        });
+        return;
+      }
+
+      if (!response.ok || !data.status) {
+        throw new Error(data.message || "Error desconocido");
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "¡OLT registrada!",
+        text: `La OLT fue creada con ID ${data.id}. Recuerda agregar sus VLANs, speed profiles y tipos de ONU.`,
+        background: "#1a1a1a",
+        color: "#fff",
+        confirmButtonColor: "#28a745",
+      }).then(() => {
+        formModal.fadeOut();
+        location.reload();
+      });
+
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.message,
+        background: "#1a1a1a",
+        color: "#fff",
+      });
+    }
+  });
+
+  // ── Test Connection ───────────────────────────────────────────────
+  $(".test-connection").on("click", async function () {
+    const ip   = $("#olt_ip").val().trim();
+    const port = $("#telnet_port").val().trim() || "23";
+    const user = $("#telnet_user").val().trim();
+    const pass = $("#telnet_password").val().trim();
+
+    if (!ip || !user || !pass) {
+      Swal.fire({
+        icon: "warning",
+        title: "Datos incompletos",
+        text: "Completa IP, usuario y contraseña antes de probar la conexión.",
+        background: "#1a1a1a",
+        color: "#fff",
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: "Probando conexión…",
+      text: `Conectando a ${ip}:${port}`,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => Swal.showLoading(),
+      background: "#1a1a1a",
+      color: "#fff",
+    });
+
+    try {
+      const response = await fetch("../api/oltProfile.php?accion=testConnection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ olt_ip: ip, telnet_port: port, telnet_user: user, telnet_password: pass }),
+      });
+
+      const data = await response.json();
+
+      Swal.fire({
+        icon: data.status ? "success" : "error",
+        title: data.status ? "Conexión exitosa" : "Sin conexión",
+        text: data.message,
+        background: "#1a1a1a",
+        color: "#fff",
+      });
+
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error de red",
+        text: "No se pudo alcanzar el servidor.",
+        background: "#1a1a1a",
+        color: "#fff",
+      });
+    }
   });
 });
+
+
 //EDIT OLT
 $(document).ready(function () {
   // Variables para el modal

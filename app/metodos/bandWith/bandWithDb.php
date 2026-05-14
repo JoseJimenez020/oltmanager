@@ -1,5 +1,6 @@
 <?php
-require_once(__DIR__ . '/../../../../db/conn.php');
+// app\metodos\bandWith\bandWithDb.php
+require_once(__DIR__ . '/../../../db/conn.php');
 
 class bandWith extends DbConn {
 

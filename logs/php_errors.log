@@ -10220,3 +10220,115 @@ Stack trace:
 #1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
 #2 {main}
   thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 09:41:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 09:41:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 09:46:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 09:46:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 09:51:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 09:51:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 09:56:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 09:56:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:01:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:01:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:06:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:06:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:11:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:11:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:16:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:16:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:21:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:21:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:26:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:26:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[Tue May 12 10:30:57.665503 2026] [cgi:error] [pid 25472:tid 1652] [client 121.173.173.48:63664] malformed header from script 'php-cgi.exe': Bad header: <b>Security Alert!</b> The PHP
+[Tue May 12 10:30:58.525155 2026] [php:error] [pid 25472:tid 1652] [client 121.173.173.48:63703] script 'C:/xampp/htdocs/oltmanager/test.php' not found or unable to stat
+[12-May-2026 10:31:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:31:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:36:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:36:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:41:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:41:01 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:46:01 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:53:10 America/Mexico_City] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 10:53:10 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\bandWith/../../../../db/conn.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithController.php(2): require_once()
+#1 C:\xampp\htdocs\oltmanager\api\refreshDb.php(5): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\bandWith\bandWithDb.php on line 2
+[12-May-2026 11:12:24 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\vlanProfile\vlanProfileDb.php on line 34
+[12-May-2026 11:16:04 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\migracion\migracionDb.php on line 35
+[12-May-2026 11:26:05 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\migracion\migracionDb.php on line 35
+[12-May-2026 11:36:02 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\migracion\migracionDb.php on line 35
+[12-May-2026 11:46:17 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\migracion\migracionDb.php on line 31
+[12-May-2026 11:59:25 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\migracion\migracionDb.php on line 35
+[12-May-2026 12:06:23 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\migracion\migracionDb.php on line 31
+[12-May-2026 12:16:19 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\vlanProfile\vlanProfileDb.php on line 34
+[12-May-2026 15:51:09 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\profileOnu.php on line 100
+[12-May-2026 16:01:20 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\vlanProfile\vlanProfileDb.php on line 34
+[12-May-2026 16:16:15 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\migracion\migracionDb.php on line 31

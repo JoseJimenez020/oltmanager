@@ -82,6 +82,55 @@ class oltProfile extends DbConn
             $this->pdo->rollBack();
         }
     }
+
+    public function InsertOlt($data)
+    {
+        try {
+            $this->pdo->beginTransaction();
+
+            // Calcular el próximo OltIdApi disponible
+            $stmtMax = $this->pdo->query("SELECT COALESCE(MAX(OltIdApi), 0) + 1 FROM olts_list");
+            $nextId  = (int) $stmtMax->fetchColumn();
+
+            $stmt = $this->pdo->prepare(
+                'INSERT INTO olts_list
+                    (OltIdApi, OltName, OltHardVer, OltIpPrivate,
+                     OltTelnetPort, OltSnmpPort,
+                     UserTelnet, PassTelnet,
+                     ReadComm, WriteComm, SoftVer)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            );
+
+            $stmt->execute([
+                $nextId,
+                $data['olt_name'],
+                $data['hardware_version'],
+                $data['olt_ip'],
+                $data['telnet_port'],
+                $data['snmp_port'],
+                $data['telnet_user'],
+                $data['telnet_password'],
+                $data['snmp_ro'],
+                $data['snmp_rw'],
+                $data['software_version'],
+            ]);
+
+            if ($stmt->rowCount() > 0) {
+                $this->pdo->commit();
+                return $nextId;   // devuelve el OltIdApi asignado
+            }
+
+            $this->pdo->rollBack();
+            return false;
+
+        } catch (\PDOException $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            // Para depuración: error_log('InsertOlt error: ' . $e->getMessage());
+            return false;
+        }
+    }
     public function getIndexOlt($olt = null)
     {
         $query = "SELECT o.OnuSn,o.OntId,o.OntPos,g.IndexOid,ig.IndexIntGpon,p.Status

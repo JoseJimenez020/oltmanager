@@ -1,4 +1,7 @@
 <?php
+
+set_time_limit(600);
+ini_set('max_execution_time', 600);
 require_once(__DIR__ . '/../app/metodos/onuProfile/profileOnu.php');
 require_once(__DIR__ . '/../app/metodos/potencia/statusOnu.php');
 require_once(__DIR__ . '/../app/metodos/migracion/migracionStatus.php');

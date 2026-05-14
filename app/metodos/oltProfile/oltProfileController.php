@@ -43,4 +43,8 @@ class oltProfileController{
         $result = $this->db->getVlansMgmtByOlt($zona);
         return $result;
     }
+        public function InsertOlt($data)
+    {
+        return $this->db->InsertOlt($data);
+    }
 }
