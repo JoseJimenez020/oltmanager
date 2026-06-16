@@ -237,9 +237,9 @@ $(document).ready(function () {
   $("#formModalOLT form").on("submit", async function (e) {
     e.preventDefault();
 
-    const form     = this;
+    const form = this;
     const formData = new FormData(form);
-    const payload  = {};
+    const payload = {};
     formData.forEach((value, key) => { payload[key] = value.trim(); });
 
     // Validación básica en cliente
@@ -323,7 +323,7 @@ $(document).ready(function () {
 
   // ── Test Connection ───────────────────────────────────────────────
   $(".test-connection").on("click", async function () {
-    const ip   = $("#olt_ip").val().trim();
+    const ip = $("#olt_ip").val().trim();
     const port = $("#telnet_port").val().trim() || "23";
     const user = $("#telnet_user").val().trim();
     const pass = $("#telnet_password").val().trim();
@@ -395,7 +395,7 @@ $(document).ready(function () {
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       if (data.status === true) {
         // Obtén la información del OLT de la respuesta
@@ -492,10 +492,49 @@ $(document).ready(function () {
   });
 
   // Acción para el botón "Test Connection"
-  $(".test-connection").on("click", function () {
-    alert(
-      "Testing connection... (Aquí puedes agregar la lógica para la prueba)"
-    );
+  // Acción para el botón "Test Connection"
+  $("#other_button").on("click", async function () {
+    const oltIp = $("#olt_ip").val();
+    const oltUser = $("#telnet_user").val();
+    const oltPass = $("#telnet_password").val();
+    const oltName = $("#olt_name").val();
+
+    if (!oltName || !oltIp) {
+      Swal.fire({ icon: 'warning', title: 'Datos incompletos', text: 'Asegúrate de que el formulario esté cargado.' });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Probando conexión...',
+      text: 'Por favor espera',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => { Swal.showLoading(); },
+      background: '#1a1a1a',
+      color: '#fff',
+    });
+
+    try {
+      const response = await fetch('../api/oltProfile.php?accion=testConnection', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          olt_name: oltName,
+          olt_ip: oltIp,
+          telnet_user: oltUser,
+          telnet_password: oltPass,
+        }),
+      });
+
+      const data = await response.json();
+      Swal.fire({
+        icon: data.status ? 'success' : 'error',
+        title: data.status ? 'Conexión exitosa' : 'Fallo de conexión',
+        text: data.message,
+      });
+    } catch (error) {
+      Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+    }
   });
 });
 //SPEED PROFILE
@@ -988,27 +1027,27 @@ function compararIPs(ip1, ip2) {
 $(document).ready(async function () {
   // Si no está inicializada la tabla, inicializarla
   if (!$.fn.DataTable.isDataTable('#ipsTable')) {
-      const searchParams = new URLSearchParams(window.location.search);
-      const olt = searchParams.get('id');
-      try {
-          const response = await fetch(`../api/ips.php?accion=ipsTable&zona=${olt}`);
-          if (!response.ok) {
-              throw new Error(`Response status: ${response.status}`);
-            }
-        
-            const data = await response.json();
-            if (data.status) {
-              // Verificamos si DataTable ya está inicializado y destruimos la instancia anterior si es necesario
-              if ($.fn.DataTable.isDataTable('#ipsTable')) {
-                  $('#ipsTable').DataTable().destroy();  // Destruir la instancia anterior
-              }
-              // Primero, limpiar el tbody antes de insertar nuevos datos
-              $("#ipsTableBody").empty();
-              // Iterar sobre los datos y agregar filas a la tabla
-              data.ip.forEach(item => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const olt = searchParams.get('id');
+    try {
+      const response = await fetch(`../api/ips.php?accion=ipsTable&zona=${olt}`);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
 
-                  const row = $('<tr>');
-                  row.html(`
+      const data = await response.json();
+      if (data.status) {
+        // Verificamos si DataTable ya está inicializado y destruimos la instancia anterior si es necesario
+        if ($.fn.DataTable.isDataTable('#ipsTable')) {
+          $('#ipsTable').DataTable().destroy();  // Destruir la instancia anterior
+        }
+        // Primero, limpiar el tbody antes de insertar nuevos datos
+        $("#ipsTableBody").empty();
+        // Iterar sobre los datos y agregar filas a la tabla
+        data.ip.forEach(item => {
+
+          const row = $('<tr>');
+          row.html(`
                       <td>${item.ipAddress}</td>
                       <td>${item.mask}</td>
                       <td>${item.defaultGateway}</td>
@@ -1021,37 +1060,37 @@ $(document).ready(async function () {
                         </div></td>
                       `);
 
-                  $("#ipsTableBody").append(row);
-              });
+          $("#ipsTableBody").append(row);
+        });
 
-              // Ahora inicializar DataTable solo si aún no está inicializada
-              downloadTable = $("#ipsTable").DataTable({
-                  paging: true,
-                  searching: true,
-                  ordering: true,
-                  info: true,
-                  lengthMenu: [5, 10, 25, 50],
-                  pageLength: 5,
-                  language: {
-                      lengthMenu: "Mostrar _MENU_ registros por página",
-                      zeroRecords: "No se encontraron resultados",
-                      info: "Mostrando página _PAGE_ de _PAGES_",
-                      infoEmpty: "No hay registros disponibles",
-                      infoFiltered: "(filtrado de _MAX_ registros totales)",
-                      search: "Buscar:",
-                      paginate: {
-                          first: "Primero",
-                          last: "Último",
-                          next: "Siguiente",
-                          previous: "Anterior"
-                      }
-                  }
-              });
-          } else {
-              console.log('No se encontraron datos para Download');
+        // Ahora inicializar DataTable solo si aún no está inicializada
+        downloadTable = $("#ipsTable").DataTable({
+          paging: true,
+          searching: true,
+          ordering: true,
+          info: true,
+          lengthMenu: [5, 10, 25, 50],
+          pageLength: 5,
+          language: {
+            lengthMenu: "Mostrar _MENU_ registros por página",
+            zeroRecords: "No se encontraron resultados",
+            info: "Mostrando página _PAGE_ de _PAGES_",
+            infoEmpty: "No hay registros disponibles",
+            infoFiltered: "(filtrado de _MAX_ registros totales)",
+            search: "Buscar:",
+            paginate: {
+              first: "Primero",
+              last: "Último",
+              next: "Siguiente",
+              previous: "Anterior"
+            }
           }
-      } catch (error) {
-          console.error('Error al obtener datos de Download:', error);
+        });
+      } else {
+        console.log('No se encontraron datos para Download');
       }
+    } catch (error) {
+      console.error('Error al obtener datos de Download:', error);
+    }
   }
 });

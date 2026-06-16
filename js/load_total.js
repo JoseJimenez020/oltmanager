@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Selección de elementos del DOM
     const h1Offline = document.querySelector(".total-offline");
     const h1LowSignal = document.querySelector(".total-low");
     const h1Ok = document.querySelector(".total-ok");
@@ -7,9 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const dOnline = document.getElementById("online");
     const dOffline = document.getElementById("offline");
     const dLow = document.getElementById("low");
-    
 
-    // Función para mostrar el indicador de carga
     function showLoadingH1() {
         const loadingSpinner = '<span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">autorenew</span>';
         h1unconf.innerHTML = loadingSpinner;
@@ -22,34 +19,41 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function loadTotal() {
-        showLoadingH1(); // Muestra el spinner mientras se cargan los datos
+        showLoadingH1();
 
         fetch('../controllers/total_class_onus.php')
             .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return response.json();
             })
             .then(data => {
-
-                data.forEach((row, index) => {
-                    h1unconf.innerHTML = row.totalUnconfigured
-                    h1Ok.innerHTML = row.totalOnline
-                    h1Offline.innerHTML = row.totalOff
-                    h1LowSignal.innerHTML = row.totalLow
-                    dOnline.innerHTML = row.descripcionOk
-                    dOffline.innerHTML = row.descripcionOffline
-                    dLow.innerHTML = row.descripcionLow
-                })
-
+                data.forEach(row => {
+                    h1Ok.innerHTML      = row.totalOnline;
+                    h1Offline.innerHTML = row.totalOff;
+                    h1LowSignal.innerHTML = row.totalLow;
+                    dOnline.innerHTML   = row.descripcionOk;
+                    dOffline.innerHTML  = row.descripcionOffline;
+                    dLow.innerHTML      = row.descripcionLow;
+                });
             })
             .catch(error => {
-                console.error('Error al cargar los datos:', error);
+                console.error('Error al cargar totales:', error);
                 h1Ok.innerHTML = 'Error';
+            });
+
+        fetch('../controllers/load_table_unconf.php')
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                h1unconf.innerHTML = data.length + ' ONUS';
+            })
+            .catch(error => {
+                console.error('Error al cargar desautorizadas:', error);
+                h1unconf.innerHTML = 'Error';
             });
     }
 
-    // Llamar a la función para cargar los datos al cargar la página
     loadTotal();
 });
