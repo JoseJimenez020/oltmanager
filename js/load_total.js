@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function loadTotal() {
         showLoadingH1();
 
+        // Una sola llamada: total_class_onus.php ya trae el conteo de
+        // desautorizadas desde la caché (llenada por cron), no por SNMP en vivo.
         fetch('../controllers/total_class_onus.php')
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -28,30 +30,18 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(data => {
                 data.forEach(row => {
-                    h1Ok.innerHTML      = row.totalOnline;
-                    h1Offline.innerHTML = row.totalOff;
+                    h1Ok.innerHTML        = row.totalOnline;
+                    h1Offline.innerHTML   = row.totalOff;
                     h1LowSignal.innerHTML = row.totalLow;
-                    dOnline.innerHTML   = row.descripcionOk;
-                    dOffline.innerHTML  = row.descripcionOffline;
-                    dLow.innerHTML      = row.descripcionLow;
+                    h1unconf.innerHTML    = row.totalUnconfigured;
+                    dOnline.innerHTML     = row.descripcionOk;
+                    dOffline.innerHTML    = row.descripcionOffline;
+                    dLow.innerHTML        = row.descripcionLow;
                 });
             })
             .catch(error => {
                 console.error('Error al cargar totales:', error);
                 h1Ok.innerHTML = 'Error';
-            });
-
-        fetch('../controllers/load_table_unconf.php')
-            .then(response => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                return response.json();
-            })
-            .then(data => {
-                h1unconf.innerHTML = data.length + ' ONUS';
-            })
-            .catch(error => {
-                console.error('Error al cargar desautorizadas:', error);
-                h1unconf.innerHTML = 'Error';
             });
     }
 

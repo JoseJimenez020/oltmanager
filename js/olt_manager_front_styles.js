@@ -763,224 +763,225 @@ $(document).ready(function () {
 
 const formIpGenerator = document.getElementById("IpGenerator");
 
-// Obtener referencias a los inputs
-const octet1 = document.getElementById("Octet1");
-const octet2 = document.getElementById("Octet2");
-const octet3 = document.getElementById("Octet3");
-const octet4 = document.getElementById("Octet4");
-const endOctet1 = document.getElementById("endOctet1");
-const endOctet2 = document.getElementById("endOctet2");
-const endOctet3 = document.getElementById("endOctet3");
-const endOctet4 = document.getElementById("endOctet4");
-const gateOctet1 = document.getElementById("gateOctet1");
-const gateOctet2 = document.getElementById("gateOctet2");
-const gateOctet3 = document.getElementById("gateOctet3");
-const gateOctet4 = document.getElementById("gateOctet4");
-const dns1 = document.getElementById("dns1");
-const dns2 = document.getElementById("dns2");
+if (formIpGenerator) {
+  // Obtener referencias a los inputs
+  const octet1 = document.getElementById("Octet1");
+  const octet2 = document.getElementById("Octet2");
+  const octet3 = document.getElementById("Octet3");
+  const octet4 = document.getElementById("Octet4");
+  const endOctet1 = document.getElementById("endOctet1");
+  const endOctet2 = document.getElementById("endOctet2");
+  const endOctet3 = document.getElementById("endOctet3");
+  const endOctet4 = document.getElementById("endOctet4");
+  const gateOctet1 = document.getElementById("gateOctet1");
+  const gateOctet2 = document.getElementById("gateOctet2");
+  const gateOctet3 = document.getElementById("gateOctet3");
+  const gateOctet4 = document.getElementById("gateOctet4");
+  const dns1 = document.getElementById("dns1");
+  const dns2 = document.getElementById("dns2");
 
-//Input de mascara
-const mask = document.getElementById("mask");
+  //Input de mascara
+  const mask = document.getElementById("mask");
 
-// Sincronizar los octetos cuando cambien los valores iniciales
-octet1.addEventListener("input", syncOctets);
-octet2.addEventListener("input", syncOctets);
-octet3.addEventListener("input", syncOctets);
+  // Sincronizar los octetos cuando cambien los valores iniciales
+  octet1.addEventListener("input", syncOctets);
+  octet2.addEventListener("input", syncOctets);
+  octet3.addEventListener("input", syncOctets);
 
-function syncOctets() {
-  // Copiar valores a los campos de End IP
-  endOctet1.value = octet1.value;
-  endOctet2.value = octet2.value;
-  endOctet3.value = octet3.value;
+  function syncOctets() {
+    // Copiar valores a los campos de End IP
+    endOctet1.value = octet1.value;
+    endOctet2.value = octet2.value;
+    endOctet3.value = octet3.value;
 
-  // Deshabilitar los campos para que no se puedan editar
-  endOctet1.disabled = true;
-  endOctet2.disabled = true;
+    // Deshabilitar los campos para que no se puedan editar
+    endOctet1.disabled = true;
+    endOctet2.disabled = true;
 
-  gateOctet1.value = octet1.value;
-  gateOctet2.value = octet2.value;
-  gateOctet3.value = octet3.value;
-}
-
-// Manejar el envío del formulario
-formIpGenerator.addEventListener("submit", async function (event) {
-  event.preventDefault();
-
-  // Asegurarse que los octetos estén sincronizados
-  syncOctets();
-  const startIp = [
-    parseInt(octet1.value),
-    parseInt(octet2.value),
-    parseInt(octet3.value),
-    parseInt(octet4.value),
-  ].join(".");
-
-  const endIp = [
-    parseInt(endOctet1.value),
-    parseInt(endOctet2.value),
-    parseInt(endOctet3.value),
-    parseInt(endOctet4.value),
-  ].join(".");
-
-  const subnetMask = mask.value;
-
-  const defGate = [
-    parseInt(gateOctet1.value),
-    parseInt(gateOctet2.value),
-    parseInt(gateOctet3.value),
-    parseInt(gateOctet4.value),
-  ].join(".");
-
-  const firstDns = dns1.value;
-  const secDns = dns2.value;
-
-  //Validacion para los valores del start ip segment
-  if (octet1.value > 255) {
-    alert(
-      "No puedes agregar un valor mayor a 255. Error en el octeto => " +
-      octet1.value
-    );
-    return;
-  } else if (octet2.value > 255) {
-    alert(
-      "No puedes agregar un valor mayor a 255. Error en el octeto => " +
-      octet2.value
-    );
-    return;
-  } else if (octet3.value > 255) {
-    alert(
-      "No puedes agregar un valor mayor a 255. Error en el octeto => " +
-      octet3.value
-    );
-    return;
-  } else if (octet4.value > 255) {
-    alert(
-      "No puedes agregar un valor mayor a 255. Error en el octeto => " +
-      octet4.value
-    );
+    gateOctet1.value = octet1.value;
+    gateOctet2.value = octet2.value;
+    gateOctet3.value = octet3.value;
   }
 
-  //Validacion para los valores del end ip segment
-  if (endOctet1.value > 255) {
-    alert(
-      "No puedes agregar un valor mayor a 255. Error en el octeto => " +
-      endOctet1.value
-    );
-    return;
-  } else if (endOctet2.value > 255) {
-    alert(
-      "No puedes agregar un valor mayor a 255. Error en el octeto => " +
-      endOctet2.value
-    );
-    return;
-  } else if (endOctet3.value > 255) {
-    alert(
-      "No puedes agregar un valor mayor a 255. Error en el octeto => " +
-      endOctet3.value
-    );
-    return;
-  } else if (endOctet4.value > 255) {
-    alert(
-      "No puedes agregar un valor mayor a 255. Error en el octeto => " +
-      endOctet4.value
-    );
-    return;
-  }
+  // Manejar el envío del formulario
+  formIpGenerator.addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-  //Validacion para valores del default gateway
-  if (gateOctet1.value > 255) {
-    alert(
-      "No puedes agregar un valor mayor a 255. Error en el octeto => " +
-      gateOctet1.value
-    );
-    return;
-  } else if (gateOctet2.value > 255) {
-    alert(
-      "No puedes agregar un valor mayor a 255. Error en el octeto => " +
-      gateOctet2.value
-    );
-    return;
-  } else if (gateOctet3.value > 255) {
-    alert(
-      "No puedes agregar un valor mayor a 255. Error en el octeto => " +
-      gateOctet3.value
-    );
-    return;
-  } else if (gateOctet4.value > 255) {
-    alert(
-      "No puedes agregar un valor mayor a 255. Error en el octeto => " +
-      gateOctet4.value
-    );
-    return;
-  }
+    // Asegurarse que los octetos estén sincronizados
+    syncOctets();
+    const startIp = [
+      parseInt(octet1.value),
+      parseInt(octet2.value),
+      parseInt(octet3.value),
+      parseInt(octet4.value),
+    ].join(".");
 
-  // Generar lista de IPs
-  const ipList = generarRangoIPs(startIp, endIp);
+    const endIp = [
+      parseInt(endOctet1.value),
+      parseInt(endOctet2.value),
+      parseInt(endOctet3.value),
+      parseInt(endOctet4.value),
+    ].join(".");
 
-  const ipData = {
-    ip_range: ipList,
-    mask: subnetMask,
-    default_gateway: defGate,
-    first_dns: firstDns,
-    second_dns: secDns,
-    olt_id: document.getElementById("olt_id").value, // Esta es la única línea añadida
-  };
+    const subnetMask = mask.value;
 
-  console.log(ipData);
-  try {
-    Swal.fire({
-      text: "Por favor espera un momento",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-      background: "#1a1a1a",
-      color: "#fff",
-      customClass: {
-        popup: "my-loading-popup",
-        title: "my-loading-title",
-      },
-    });
-    // Enviar datos al servidor
-    const response = await fetch("../app/metodos/ipGenerator/IPs.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(ipData),
-    });
+    const defGate = [
+      parseInt(gateOctet1.value),
+      parseInt(gateOctet2.value),
+      parseInt(gateOctet3.value),
+      parseInt(gateOctet4.value),
+    ].join(".");
 
-    const result = await response.json();
-    Swal.close();
+    const firstDns = dns1.value;
+    const secDns = dns2.value;
 
-    if (response.ok) {
+    //Validacion para los valores del start ip segment
+    if (octet1.value > 255) {
+      alert(
+        "No puedes agregar un valor mayor a 255. Error en el octeto => " +
+        octet1.value
+      );
+      return;
+    } else if (octet2.value > 255) {
+      alert(
+        "No puedes agregar un valor mayor a 255. Error en el octeto => " +
+        octet2.value
+      );
+      return;
+    } else if (octet3.value > 255) {
+      alert(
+        "No puedes agregar un valor mayor a 255. Error en el octeto => " +
+        octet3.value
+      );
+      return;
+    } else if (octet4.value > 255) {
+      alert(
+        "No puedes agregar un valor mayor a 255. Error en el octeto => " +
+        octet4.value
+      );
+    }
+
+    //Validacion para los valores del end ip segment
+    if (endOctet1.value > 255) {
+      alert(
+        "No puedes agregar un valor mayor a 255. Error en el octeto => " +
+        endOctet1.value
+      );
+      return;
+    } else if (endOctet2.value > 255) {
+      alert(
+        "No puedes agregar un valor mayor a 255. Error en el octeto => " +
+        endOctet2.value
+      );
+      return;
+    } else if (endOctet3.value > 255) {
+      alert(
+        "No puedes agregar un valor mayor a 255. Error en el octeto => " +
+        endOctet3.value
+      );
+      return;
+    } else if (endOctet4.value > 255) {
+      alert(
+        "No puedes agregar un valor mayor a 255. Error en el octeto => " +
+        endOctet4.value
+      );
+      return;
+    }
+
+    //Validacion para valores del default gateway
+    if (gateOctet1.value > 255) {
+      alert(
+        "No puedes agregar un valor mayor a 255. Error en el octeto => " +
+        gateOctet1.value
+      );
+      return;
+    } else if (gateOctet2.value > 255) {
+      alert(
+        "No puedes agregar un valor mayor a 255. Error en el octeto => " +
+        gateOctet2.value
+      );
+      return;
+    } else if (gateOctet3.value > 255) {
+      alert(
+        "No puedes agregar un valor mayor a 255. Error en el octeto => " +
+        gateOctet3.value
+      );
+      return;
+    } else if (gateOctet4.value > 255) {
+      alert(
+        "No puedes agregar un valor mayor a 255. Error en el octeto => " +
+        gateOctet4.value
+      );
+      return;
+    }
+
+    // Generar lista de IPs
+    const ipList = generarRangoIPs(startIp, endIp);
+
+    const ipData = {
+      ip_range: ipList,
+      mask: subnetMask,
+      default_gateway: defGate,
+      first_dns: firstDns,
+      second_dns: secDns,
+      olt_id: document.getElementById("olt_id").value, // Esta es la única línea añadida
+    };
+
+    console.log(ipData);
+    try {
+      Swal.fire({
+        text: "Por favor espera un momento",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+        background: "#1a1a1a",
+        color: "#fff",
+        customClass: {
+          popup: "my-loading-popup",
+          title: "my-loading-title",
+        },
+      });
+      // Enviar datos al servidor
+      const response = await fetch("../app/metodos/ipGenerator/IPs.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(ipData),
+      });
+
+      const result = await response.json();
+      Swal.close();
+
+      if (response.ok) {
+        await Swal.fire({
+          icon: "success",
+          title: "Éxito",
+          text: "IPs generadas exitosamente!",
+          background: "#1a1a1a",
+          color: "#fff",
+        });
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get("id"); // Obtiene el valor de "id"
+        window.location.href = `ONU_MgmtIPs.php?id=${id}`;
+      } else {
+        throw new Error(result.message || "Error al guardar los datos");
+      }
+    } catch (error) {
+      Swal.close(); // Cerrar loader si hay error
       await Swal.fire({
-        icon: "success",
-        title: "Éxito",
-        text: "IPs generadas exitosamente!",
+        icon: "error",
+        title: "Error",
+        text: "Error al enviar los datos: " + error.message,
         background: "#1a1a1a",
         color: "#fff",
       });
-      const urlParams = new URLSearchParams(window.location.search);
-      const id = urlParams.get("id"); // Obtiene el valor de "id"
-      window.location.href = `ONU_MgmtIPs.php?id=${id}`;
-    } else {
-      throw new Error(result.message || "Error al guardar los datos");
     }
-  } catch (error) {
-    Swal.close(); // Cerrar loader si hay error
-    await Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "Error al enviar los datos: " + error.message,
-      background: "#1a1a1a",
-      color: "#fff",
-    });
-  }
-  // Aquí puedes hacer lo que necesites con ipList, como mostrarla en pantalla
-});
-
+    // Aquí puedes hacer lo que necesites con ipList, como mostrarla en pantalla
+  });
+}
 function generarRangoIPs(ipInicio, ipFin) {
   const listaIPs = [];
   const inicio = ipInicio.split(".").map(Number);

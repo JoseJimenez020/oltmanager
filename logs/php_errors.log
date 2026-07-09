@@ -10332,3 +10332,89 @@ Stack trace:
 [12-May-2026 15:51:09 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\profileOnu.php on line 100
 [12-May-2026 16:01:20 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\vlanProfile\vlanProfileDb.php on line 34
 [12-May-2026 16:16:15 America/Merida] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\oltmanager\app\metodos\migracion\migracionDb.php on line 31
+[16-Jun-2026 23:57:29 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[16-Jun-2026 23:57:29 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[16-Jun-2026 23:57:29 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[16-Jun-2026 23:57:29 Europe/Berlin] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\onuProfile/../../../vendor/mikrotik.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php on line 2
+[16-Jun-2026 23:57:29 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\onuProfile/../../../vendor/mikrotik.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\api\onuProfile.php(28): require_once()
+#1 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php on line 2
+[16-Jun-2026 23:57:29 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[16-Jun-2026 23:57:29 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[16-Jun-2026 23:57:29 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[16-Jun-2026 23:57:29 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:56:48 Europe/Berlin] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\onuProfile/../../../vendor/mikrotik.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php on line 2
+[17-Jun-2026 17:56:48 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\onuProfile/../../../vendor/mikrotik.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\api\onuProfile.php(28): require_once()
+#1 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php on line 2
+[17-Jun-2026 17:56:48 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:56:48 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:56:48 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[17-Jun-2026 17:56:48 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:56:48 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:56:48 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:56:48 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:08 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:57:08 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:57:08 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[17-Jun-2026 17:57:08 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:08 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:08 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:08 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:18 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:57:18 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:57:18 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[17-Jun-2026 17:57:18 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:18 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:18 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:18 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:28 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:57:28 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:57:28 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[17-Jun-2026 17:57:28 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:28 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:28 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:28 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:38 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:57:38 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:57:38 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[17-Jun-2026 17:57:38 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:38 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:38 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:38 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:48 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:57:48 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:57:48 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[17-Jun-2026 17:57:48 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:48 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:48 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:48 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:58 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:57:58 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[17-Jun-2026 17:57:58 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[17-Jun-2026 17:57:58 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:58 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:58 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[17-Jun-2026 17:57:58 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[08-Jul-2026 23:51:10 Europe/Berlin] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\onuProfile/../../../vendor/mikrotik.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php on line 2
+[08-Jul-2026 23:51:10 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\onuProfile/../../../vendor/mikrotik.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\api\onuProfile.php(28): require_once()
+#1 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php on line 2
+[08-Jul-2026 23:51:19 Europe/Berlin] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\onuProfile/../../../vendor/mikrotik.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php on line 2
+[08-Jul-2026 23:51:19 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\onuProfile/../../../vendor/mikrotik.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\api\onuProfile.php(28): require_once()
+#1 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php on line 2
+[08-Jul-2026 23:51:46 Europe/Berlin] PHP Warning:  require_once(C:\xampp\htdocs\oltmanager\app\metodos\onuProfile/../../../vendor/mikrotik.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php on line 2
+[08-Jul-2026 23:51:46 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\oltmanager\app\metodos\onuProfile/../../../vendor/mikrotik.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php:2
+Stack trace:
+#0 C:\xampp\htdocs\oltmanager\api\onuProfile.php(28): require_once()
+#1 {main}
+  thrown in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php on line 2

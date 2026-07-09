@@ -77,30 +77,20 @@ upOnuList.addEventListener('click', async function(){
       text: 'Por favor espera un momento',
       allowOutsideClick: false,
       allowEscapeKey: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
+      didOpen: () => { Swal.showLoading(); },
       background: '#1a1a1a',
       color: '#fff',
-      customClass: {
-        popup: 'my-loading-popup',
-        title: 'my-loading-title',
-      },
+      customClass: { popup: 'my-loading-popup', title: 'my-loading-title' },
     });
     try {
-        const data = {
-            'accion':'inOnuOlt'
-        };
-        const response = await fetch('../api/oltProfile.php',{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json',
-            },
-            body: JSON.stringify(data),
+        const response = await fetch('../api/oltProfile.php?accion=inOnuOlt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({}) // ya no se necesita 'accion' en el body
         });
         if (!response.ok) {
             throw new Error(`Response: ${response.status}`);
-        }      
+        }
         const json = await response.json();
         if (json.status) {
             location.reload();
