@@ -165,29 +165,31 @@ class profileOnu
         return $n;
     }
 
-    public function formatOnu($onu)
-    {
-        $sn        = self::$gpon;
-        $resultado = ['existe' => [], 'migracion' => [], 'nuevo' => []];
+    public function formatOnu($onu){
+    $sn = self::$gpon;
+    $resultado = ['existe' => [], 'migracion' => [], 'nuevo' => []];
 
-        foreach ($onu as $n) {
-            $serial     = $n['sn'];
-            $indexNuevo = $n['index'];
-            $index      = @$sn[$serial];
-
-            if (isset($index)) {
-                $indexViejo = $index['IndexOid'] . '.' . $index['OntPos'];
-                if ($indexNuevo === $indexViejo) {
-                    $resultado['existe'][] = $n;
-                } else {
-                    $resultado['migracion'][] = $n;
-                    $lastIndex = array_key_last($resultado['migracion']);
-                    $resultado['migracion'][$lastIndex]['indexViejo'] = $indexViejo;
-                }
-            } else {
-                $resultado['nuevo'][] = $n;
+    foreach ($onu as $n) {
+        $serial = strtoupper(trim($n['sn']));   // normaliza
+        $index = null;
+        foreach ($sn as $dbSerial => $dbData) {
+            if (strtoupper(trim($dbSerial)) === $serial) {
+                $index = $dbData;
+                break;
             }
         }
-        return $resultado;
+        if (isset($index)) {
+            $indexViejo = $index['IndexOid'] . '.' . $index['OntPos'];
+            if ($n['index'] === $indexViejo) {
+                $resultado['existe'][] = $n;
+            } else {
+                $n['indexViejo'] = $indexViejo;
+                $resultado['migracion'][] = $n;
+            }
+        } else {
+            $resultado['nuevo'][] = $n;
+        }
     }
+    return $resultado;
+}
 }

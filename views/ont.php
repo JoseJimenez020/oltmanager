@@ -14,7 +14,7 @@ require '../controllers/sesion.php';
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- CDN CHARTS.JS GRAFICAS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <title>Document</title>
+    <title>Perfil de ONU</title>
 </head>
 
 <body>

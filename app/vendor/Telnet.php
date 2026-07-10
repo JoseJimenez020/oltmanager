@@ -1094,7 +1094,7 @@ class OpenSock{
         }
         
     }
-    function DhcpIpVlanPortMng($tarjeta,$mode,$vlan='',$port){
+    function DhcpIpVlanPortMng($tarjeta,$mode,$vlan='',$port=null){
         $this->open();
         stream_set_timeout($this->con, 1); // 10 segundos
 
