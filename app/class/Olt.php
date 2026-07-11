@@ -8,7 +8,7 @@ class OltManager{
         "parrilla"=>"192.168.90.38",
         "campestre"=>"192.168.90.34",
         "pichucalco"=>"192.168.90.58",
-        "cdDelCarmen"=>"201.151.119.134",
+        "carmen"=>"201.151.119.134",
         "nacajuca"=>"192.168.90.78",
         "deliciasChihuahua"=>"192.168.90.74",
         "tacotalpa"=>"192.168.90.46",
@@ -18,7 +18,8 @@ class OltManager{
         "comalcalco"=>"192.168.90.50",
         "pomoca"=>"192.168.90.14",
         "jalpa"=>"192.168.90.22",
-        "cunduacan"=>"192.168.90.162" 
+        "cunduacan"=>"192.168.90.162", 
+        "bosques" =>"192.168.90.70"
     ];
     public $community = [
         "cardenasChihuahua"=>"pnNe34oqcrbD",
@@ -28,7 +29,7 @@ class OltManager{
         "parrilla"=>"fTdl8ybpijkX",
         "campestre"=>"Qrh7puo6RIF8",
         "pichucalco"=>"JLZykMjYD6wT",
-        "cdDelCarmen"=>"wdGBb2PMm7no",
+        "carmen"=>"wdGBb2PMm7no",
         "nacajuca"=>"3fDruzl6jUmo",
         "deliciasChihuahua"=>"z40hobTnfaeZ",
         "tacotalpa"=>"eqmRPZwDhbA3",
@@ -38,7 +39,8 @@ class OltManager{
         "comalcalco"=>"etjnWH1UYIkJ",
         "pomoca"=>"lraMC859OYUe",
         "jalpa"=>"ZMJOrfPp98ou",
-        "cunduacan"=>"ndegKYks67dl1"
+        "cunduacan"=>"ndegKYks67dl1",
+        "bosques"=>"gaSTv4qctFYad"
     ];
 
     public $communityWrite = [
@@ -49,7 +51,7 @@ class OltManager{
         "parrilla"=>"ZTBdhq9xI1oi",
         "campestre"=>"zkrRJNiW8Z6T",
         "pichucalco"=>"UwlVANfIBj53",
-        "cdDelCarmen"=>"rRiajdpU2bgl",
+        "carmen"=>"rRiajdpU2bgl",
         "nacajuca"=>"f0nezpwMNg1a",
         "deliciasChihuahua"=>"niwlgpae7Y6D",
         "tacotalpa"=>"OuCqsa127NEH",
@@ -59,7 +61,8 @@ class OltManager{
         "comalcalco"=>"DF9KjUJqQxW5",
         "pomoca"=>"3EAhqzX4ryb8",
         "jalpa"=>"DTRylgIwj2FW",
-        "cunduacan"=>"1ayAVgTthMv5"
+        "cunduacan"=>"1ayAVgTthMv5",
+        "bosques"=>"1ayAVgotyhMv2"
     ];
 
     public $connUser = [
@@ -70,7 +73,7 @@ class OltManager{
         "parrilla"=>"parrilla",
         "campestre"=>"campestre",
         "pichucalco"=>"pichucalco",
-        "cdDelCarmen"=>"carmen",
+        "carmen"=>"carmen",
         "nacajuca"=>"nacajuca",
         "deliciasChihuahua"=>"chihuahua",
         "tacotalpa"=>"tacotalpa",
@@ -80,7 +83,8 @@ class OltManager{
         "comalcalco"=>"comalcalco",
         "pomoca"=>"smartoltusr",
         "jalpa"=>"smartoltusr",
-        "cunduacan"=>"cunduacan" 
+        "cunduacan"=>"cunduacan", 
+        "bosques"=>"bosques"
     ];
 
     public $connPass = [
@@ -91,7 +95,7 @@ class OltManager{
         "parrilla"=>"Mko0nji9!",
         "campestre"=>"Mko0nji9!",
         "pichucalco"=>"Mko0nji9!",
-        "cdDelCarmen"=>"Mko0nji9!",
+        "carmen"=>"Mko0nji9!",
         "nacajuca"=>"Mko0nji9!",
         "deliciasChihuahua"=>"Mko0nji9!",
         "tacotalpa"=>"Mko0nji9!",
@@ -101,7 +105,8 @@ class OltManager{
         "comalcalco"=>"Mko0nji9!",
         "pomoca"=>"1qaz2wsx",
         "jalpa"=>"1qaz3edc",
-        "cunduacan"=>"Mko0nji9!" 
+        "cunduacan"=>"Mko0nji9!",
+        "bosques"=>"Mko0nji9!"
     ];
 
     public function hostOlt(){

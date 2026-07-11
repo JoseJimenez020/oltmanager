@@ -275,6 +275,7 @@ $(document).ready(function () {
     });
 
     try {
+      console.log("PAYLOAD A ENVIAR:", payload);
       const response = await fetch("../api/oltProfile.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
