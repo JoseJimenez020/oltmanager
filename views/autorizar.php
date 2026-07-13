@@ -11,7 +11,8 @@ include '../controllers/alertas.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
+    <link rel="icon" type="image/x-icon" href="../img/favicon.ico" />
     <link rel="stylesheet" href="../style/style.css">
     <title>Autorizar</title>
 </head>

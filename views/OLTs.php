@@ -13,7 +13,8 @@ require '../controllers/privilegios.php';
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="../style/style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <title>Settings</title>
+    <link rel="icon" type="image/x-icon" href="../img/favicon.ico" />
+    <title>OLTs</title>
 </head>
 
 <body>
@@ -101,7 +102,8 @@ require '../controllers/privilegios.php';
                     <div class="settings_header">
                         <a href="settings.php"><button><img src="../img/return.png">Regresar</button></a>
                         <button id="openFormModalOLT"><img src="../img/plus.svg">Add OLT</button>
-                        <button class="olts_export_list" id="updateOnuList"><img src="../img/plus.svg">Actualizar ONUs list</button>
+                        <button class="olts_export_list" id="updateOnuList"><img src="../img/plus.svg">Actualizar ONUs
+                            list</button>
                     </div>
                     <table id="oltsTable">
                         <thead>

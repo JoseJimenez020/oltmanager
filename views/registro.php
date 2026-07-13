@@ -13,7 +13,8 @@ include '../controllers/alertas.php';
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../style/style.css">
-    <title>Document</title>
+    <link rel="icon" type="image/x-icon" href="../img/favicon.ico" />
+    <title>Registrar Usuarios</title>
 </head>
 
 <body>
