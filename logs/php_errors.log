@@ -11360,3 +11360,80 @@ Stack trace:
 [10-Jul-2026 00:47:20 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
 [10-Jul-2026 00:56:24 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php on line 28
 [11-Jul-2026 21:04:29 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\onuProfile\ipMac.php on line 28
+[13-Jul-2026 19:42:38 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:42:38 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:42:38 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[13-Jul-2026 19:42:38 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:42:38 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:42:38 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:42:38 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:42:50 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:42:50 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:42:50 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[13-Jul-2026 19:42:50 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:42:50 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:42:50 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:42:50 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:42:55 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:42:55 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:42:55 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[13-Jul-2026 19:42:55 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:42:55 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:42:55 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:42:55 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:22 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:43:22 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:43:22 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[13-Jul-2026 19:43:22 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:22 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:22 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:22 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:26 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:43:26 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:43:26 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[13-Jul-2026 19:43:26 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:26 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:26 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:26 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:29 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:43:29 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:43:29 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[13-Jul-2026 19:43:29 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:29 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:29 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:29 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:43:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:43:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[13-Jul-2026 19:43:37 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:37 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:47 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:43:47 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:43:47 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[13-Jul-2026 19:43:47 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:47 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:47 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:43:47 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:44:07 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:44:07 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:44:07 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[13-Jul-2026 19:44:07 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:44:07 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:44:07 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:44:07 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:44:17 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:44:17 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:44:17 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[13-Jul-2026 19:44:17 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:44:17 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:44:17 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:44:17 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:44:27 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:44:27 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 88
+[13-Jul-2026 19:44:27 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\oltmanager\controllers\refresh_onu.php on line 89
+[13-Jul-2026 19:44:27 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:44:27 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:44:27 Europe/Berlin] PHP Warning:  Undefined variable $profile in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21
+[13-Jul-2026 19:44:27 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\oltmanager\app\metodos\snmp\oltSnmp.php on line 21

@@ -12,6 +12,7 @@ require '../controllers/sesion.php';
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="../style/style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="icon" type="image/x-icon" href="../img/favicon.ico" />
     <title>Desautorizados</title>
 </head>
 

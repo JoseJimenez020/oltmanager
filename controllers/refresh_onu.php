@@ -1,28 +1,30 @@
 <?php
 // 1) Force JSON output and silence on-screen errors
 header('Content-Type: application/json; charset=utf-8');
-ini_set('display_errors',   0);
-ini_set('log_errors',       1);
-ini_set('error_log',        (__DIR__ . '../../logs/php_errors.log'));
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', (__DIR__ . '../../logs/php_errors.log'));
 error_reporting(E_ALL);
 
 // 2) Catch any stray output
 ob_start();
 
 // 3) Your helper functions (distanciaPotencia, tiempoTranscurrido, obtenerStatus)...
-function distanciaPotencia($rx, $metros) {
+function distanciaPotencia($rx, $metros)
+{
     if ($rx > -30000) {
-        return '<span class="material-symbols-outlined succes">signal_cellular_alt</span>' . number_format($rx / 1000, 2) . 'dBm /' . " (" . $metros . "m)" ;
+        return '<span class="material-symbols-outlined succes">signal_cellular_alt</span>' . number_format($rx / 1000, 2) . 'dBm /' . " (" . $metros . "m)";
     } else if (($rx <= -30000) && ($rx > -32000)) {
-        return '<span class="material-symbols-outlined warning">signal_cellular_alt</span>' . number_format($rx / 1000, 2) . 'dBm /' . " (" . $metros . "m)" ;
+        return '<span class="material-symbols-outlined warning">signal_cellular_alt</span>' . number_format($rx / 1000, 2) . 'dBm /' . " (" . $metros . "m)";
     } else if (($rx <= -32000) && ($rx > -80000)) {
-        return '<span class="material-symbols-outlined danger">signal_cellular_alt</span>' . number_format($rx / 1000, 2) . 'dBm /' . " (" . $metros . "m)" ;
+        return '<span class="material-symbols-outlined danger">signal_cellular_alt</span>' . number_format($rx / 1000, 2) . 'dBm /' . " (" . $metros . "m)";
     } else if ($rx <= -80000) {
         return ("-");
     }
 }
 
-function tiempoTranscurrido($fecha) {
+function tiempoTranscurrido($fecha)
+{
     if (!is_string($fecha)) {
         return 'Fecha no válida';
     }
@@ -55,25 +57,34 @@ function tiempoTranscurrido($fecha) {
 }
 
 
-function obtenerStatus($estado) {
-    switch($estado) {
-        case "0": return '<span class="material-symbols-outlined warning">sync_problem</span>';
-        case "1": return '<span class="material-symbols-outlined">link_off</span>';
-        case "2": return '<span class="material-symbols-outlined">sync</span>';
-        case "3": return '<span class="material-symbols-outlined succes">public</span>';
-        case "4": return '<span class="material-symbols-outlined">power_off</span>';
-        case "5": return '<span class="material-symbols-outlined warning">signal_wifi_off</span>';
-        case "6": return '<span class="material-symbols-outlined">public</span>';
-        default: "-";
+function obtenerStatus($estado)
+{
+    switch ($estado) {
+        case "0":
+            return '<span class="material-symbols-outlined warning">sync_problem</span>';
+        case "1":
+            return '<span class="material-symbols-outlined">link_off</span>';
+        case "2":
+            return '<span class="material-symbols-outlined">sync</span>';
+        case "3":
+            return '<span class="material-symbols-outlined succes">public</span>';
+        case "4":
+            return '<span class="material-symbols-outlined">power_off</span>';
+        case "5":
+            return '<span class="material-symbols-outlined warning">signal_wifi_off</span>';
+        case "6":
+            return '<span class="material-symbols-outlined">public</span>';
+        default:
+            "-";
     }
 }
 
 try {
     // 4) Fix your paths: note the leading slash before ../../
-    require_once (__DIR__ . '../../app/metodos/onuProfile/onuProfileController.php');
-    require_once (__DIR__ . '../../app/metodos/onuProfile/getProfileOnu.php');
-    require_once (__DIR__ . '../../app/metodos/snmp/oltSnmp.php');
-    require_once (__DIR__ . '../../app/metodos/onus/onu.php');
+    require_once(__DIR__ . '../../app/metodos/onuProfile/onuProfileController.php');
+    require_once(__DIR__ . '../../app/metodos/onuProfile/getProfileOnu.php');
+    require_once(__DIR__ . '../../app/metodos/snmp/oltSnmp.php');
+    require_once(__DIR__ . '../../app/metodos/onus/onu.php');
 
     // 5) Validate input
     $id = $_GET['pass'] ?? null;
@@ -83,25 +94,36 @@ try {
         exit;
     }
 
-    // 6) Business logic
-    $profile   = (new onuProfileController())->GetResyncOnu($id);
-    $index     = $profile['IndexOid'] .'.'. $profile['OntPos'];
-    $snmp      = new nSnmp($profile['OntOlt'], 'read');
-    $poS       = new getProfileOnu($snmp);
-    $onuData   = $poS->getProfileOnu($index);
-    $fechaDb   = (new Onus())->GetTiempo($id)['Date'];
+    $profile = (new onuProfileController())->GetResyncOnu($id);
 
-    $status    = $onuData[1];
+    if (empty($profile)) {
+        error_log("[refresh_onu.php] GetResyncOnu no encontró la ONU id=$id");
+        http_response_code(404);
+        ob_clean();
+        echo json_encode([
+            'error' => 'La ONU no existe o falta información relacionada (vlan/tipo) en la base de datos.',
+            'id' => $id
+        ]);
+        exit;
+    }
+
+    $index = $profile['IndexOid'] . '.' . $profile['OntPos'];
+    $snmp = new nSnmp($profile['OntOlt'], 'read');
+    $poS = new getProfileOnu($snmp);
+    $onuData = $poS->getProfileOnu($index);
+    $fechaDb = (new Onus())->GetTiempo($id)['Date'];
+
+    $status = $onuData[1];
     $distancia = $onuData[2];
-    $potencia  = $onuData[0];
-    $admin     = $onuData[3];
-    $ip        = $onuData[4];
+    $potencia = $onuData[0];
+    $admin = $onuData[3];
+    $ip = $onuData[4];
 
     $payload = [
-      'status'            => obtenerStatus($status) . ' ' . tiempoTranscurrido($fechaDb),
-      'distanciaPotencia' => distanciaPotencia($potencia, $distancia),
-      'admin'             => $admin,
-      'ip'                => $ip
+        'status' => obtenerStatus($status) . ' ' . tiempoTranscurrido($fechaDb),
+        'distanciaPotencia' => distanciaPotencia($potencia, $distancia),
+        'admin' => $admin,
+        'ip' => $ip
     ];
 
     // 7) Clean any stray buffer, output our JSON, and exit
@@ -115,8 +137,8 @@ try {
     http_response_code(500);
     ob_clean();
     echo json_encode([
-      'error'   => 'Error interno al obtener datos ONU.',
-      'details' => $e->getMessage()
+        'error' => 'Error interno al obtener datos ONU.',
+        'details' => $e->getMessage()
     ]);
     exit;
 }
