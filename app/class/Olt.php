@@ -8,7 +8,7 @@ class OltManager{
         "parrilla"=>"192.168.90.38",
         "campestre"=>"192.168.90.34",
         "pichucalco"=>"192.168.90.58",
-        "carmen"=>"201.151.119.134",
+        "carmen"=>"192.168.90.70",//201.151.119.134
         "nacajuca"=>"192.168.90.78",
         "deliciasChihuahua"=>"192.168.90.74",
         "tacotalpa"=>"192.168.90.46",
@@ -19,7 +19,7 @@ class OltManager{
         "pomoca"=>"192.168.90.14",
         "jalpa"=>"192.168.90.22",
         "cunduacan"=>"192.168.90.162", 
-        "bosques" =>"192.168.90.70"
+        "bosques" =>"192.168.90.98"
     ];
     public $community = [
         "cardenasChihuahua"=>"pnNe34oqcrbD",

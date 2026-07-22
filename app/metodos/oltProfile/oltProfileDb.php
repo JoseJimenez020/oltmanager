@@ -6,7 +6,7 @@ class oltProfile extends DbConn
 
     public function GetOlt()
     {
-        $query = "SELECT * FROM olts_list";
+        $query = "SELECT * FROM olts_list WHERE Activo = 1";
 
         $result = $this->pdo->prepare($query);
         $result->execute();
