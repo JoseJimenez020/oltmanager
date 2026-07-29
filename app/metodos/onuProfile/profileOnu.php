@@ -19,6 +19,8 @@ class profileOnu
     public static $ol;
     public static $gpon;
 
+    private $pendingRxHistory = []; // NUEVO: acumula [OntId, Rx, Fecha] en memoria
+
     public function __construct()
     {
         $this->onu = new onuProfileController();
@@ -31,16 +33,40 @@ class profileOnu
 
     private function insertRxHistory(int $ontId, $rx, string $date): void
     {
-        if ($this->rxHistoryStmt === null) {
-            $this->rxHistoryStmt = $this->pdo->prepare(
-                'INSERT INTO historial_potencia (IdOnu, RxOnu, HFecha) VALUES (?, ?, ?)'
-            );
+        $this->pendingRxHistory[] = [$ontId, $rx, $date];
+    }
+
+    /**
+     * Escribe todo el histórico acumulado durante formatOnu() en lotes,
+     * en vez de un INSERT por ONU. Con miles de ONUs y latencia de red hacia
+     * la DB remota, un INSERT individual por fila puede sumar minutos; en
+     * lotes de 500 filas, el mismo trabajo toma segundos.
+     */
+    private function flushRxHistory(): void
+    {
+        if (empty($this->pendingRxHistory))
+            return;
+
+        $chunkSize = 500;
+        $chunks = array_chunk($this->pendingRxHistory, $chunkSize);
+
+        foreach ($chunks as $chunk) {
+            $placeholders = implode(',', array_fill(0, count($chunk), '(?,?,?)'));
+            $sql = "INSERT INTO historial_potencia (IdOnu, RxOnu, HFecha) VALUES $placeholders";
+            $params = [];
+            foreach ($chunk as $row) {
+                $params[] = $row[0];
+                $params[] = $row[1];
+                $params[] = $row[2];
+            }
+            try {
+                $this->pdo->prepare($sql)->execute($params);
+            } catch (\Throwable $e) {
+                error_log("[profileOnu::flushRxHistory] Fallo en lote: " . $e->getMessage());
+            }
         }
-        try {
-            $this->rxHistoryStmt->execute([$ontId, $rx, $date]);
-        } catch (\Throwable $e) {
-            error_log("[profileOnu::insertRxHistory] Fallo OntId $ontId: " . $e->getMessage());
-        }
+
+        $this->pendingRxHistory = []; // liberar memoria tras escribir
     }
 
     public function insertOnus($ont)
@@ -90,14 +116,18 @@ class profileOnu
     {
         $vlans = [];
         foreach (self::$ol as $v) {
+            $inicio = microtime(true);
             $snmp = new nSnmp($v['OltIdApi'], 'read');
             $s = new profileOnuS($snmp);
             $vlanS = $s->getWalk('VLAN');
             $s->close();
+            $elapsed = round(microtime(true) - $inicio, 2);
+            error_log("[profileOnu::getVlans] OLT {$v['OltName']} tardo {$elapsed}s");
             if (empty($vlanS))
                 continue;
             $vl = $this->vlan->getVlansOnus(self::$gpon, $vlanS, $v['OltIdApi']);
             $vlans = array_merge($vlans, $vl);
+            set_time_limit(300);
         }
         return $vlans;
     }
@@ -135,7 +165,7 @@ class profileOnu
             $inicio = microtime(true);
             $p = $this->getProfile($v['OltIdApi']);
             $elapsed = round(microtime(true) - $inicio, 2);
-            error_log("[profileOnu::getProfiles] OLT {$v['OltName']} tardó {$elapsed}s");
+            error_log("[profileOnu::getProfiles] OLT {$v['OltName']} tardo {$elapsed}s");
             if (is_null($p))
                 continue;
             $ont = array_merge($ont, $p);
@@ -226,6 +256,8 @@ class profileOnu
                 $resultado['nuevo'][] = $n;
             }
         }
+        $this->flushRxHistory(); // NUEVO: un solo lote de inserts, no uno por ONU
+
         return $resultado;
     }
 }

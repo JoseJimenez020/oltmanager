@@ -18,7 +18,7 @@
  *
  * INSTALACION (reemplaza ambas tareas anteriores por esta única):
  *   schtasks /create /tn "OltManager RunAll" /tr "C:\xampp\htdocs\oltmanager\cron\run_all.bat" /sc minute /mo 6 /f
- */
+ **/
 
 set_time_limit(0);
 date_default_timezone_set('America/Merida');
@@ -81,7 +81,9 @@ try {
         $stmt->execute();
         return "{$stmt->rowCount()} filas eliminadas (retención: {$dias} días)";
     });
-    
+
+
+
     // ---- Paso 1: refresh_db (SNMP -> DB: status, potencia, historial_potencia,
     // vlans, migraciones, banda ancha) ----
     runStep('refresh_db', function () {

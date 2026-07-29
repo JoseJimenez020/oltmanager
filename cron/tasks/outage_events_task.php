@@ -3,26 +3,25 @@
  * cron/tasks/outage_events_task.php
  *
  * Detecta y mantiene el estado de outage_events / outage_event_onus por
- * puerto GPON (OltIdApi + IndexCard + IndexPort), para las secciones del
- * dashboard "LOS parcial", "LOS total del PON", "Fallo de energía" y
- * "Offline N/A". Las cuatro comparten la misma lógica, solo cambia el
- * Status de potencia que se considera "afectado" por categoría.
+ * puerto GPON (OltIdApi + IndexCard + IndexPort).
  *
- * Debe ejecutarse DESPUÉS de refresh_db_task.php en el mismo ciclo, ya que
- * depende de que la tabla `potencia` tenga el Status recién actualizado por
- * SNMP. No abre ninguna sesión SNMP propia.
+ * VERSION 3 (batching agresivo): la v2 seguía haciendo 1 UPDATE/INSERT por
+ * puerto individual (~900 puertos afectados => ~2700+ round-trips => 474s).
+ * Esta versión usa INSERT ... ON DUPLICATE KEY UPDATE multi-fila (apoyado
+ * en el UNIQUE KEY sobre EsAbierto: solo puede existir un evento abierto
+ * por puerto+categoria a la vez, así que el propio motor de MySQL decide
+ * "crear nuevo" vs "actualizar el abierto" sin que PHP tenga que
+ * preguntarlo antes). Los cierres y el detalle por ONU también se agrupan
+ * en consultas IN(...) en vez de una por puerto.
  *
- * Mapeo de categorías -> Status (ver controllers/refresh_onu.php::obtenerStatus
- * y los switch de status homólogos usados en todo el front, mismo mapeo):
- *   los      -> Status = 1  (corte de fibra / pérdida de señal óptica)
- *   pwrfail  -> Status = 4  (falla de energía en el equipo del cliente)
- *   offline  -> Status = 6  (fuera de línea, sin causa distinguible)
+ * Round-trips por categoría: ~10-15 (antes: ~3 por puerto, miles en total).
  *
- * NOTA: la función auxiliar usa el prefijo outageEventsTask_ a propósito.
- * run_all.php incluye varias tasks en el mismo proceso PHP, y sin un
- * namespace o clase, cualquier `function` de nivel global declarada aquí
- * queda visible para el resto del script; el prefijo reduce el riesgo de
- * choque con nombres de otras tasks presentes o futuras.
+ * Debe ejecutarse DESPUÉS de refresh_db_task.php en el mismo ciclo.
+ *
+ * Mapeo de categorías -> Status:
+ *   los      -> Status = 1
+ *   pwrfail  -> Status = 4
+ *   offline  -> Status = 6
  */
 
 require_once(__DIR__ . '/../../db/conn.php');
@@ -48,18 +47,35 @@ return implode(' | ', array_map(
     $resumenGlobal
 ));
 
+function outageEventsTask_clave($olt, $card, $port): string
+{
+    return "$olt|$card|$port";
+}
+
 /**
- * Procesa una categoría completa: agrupa por puerto GPON, abre/actualiza/
- * cierra eventos, y sincroniza el detalle por ONU.
+ * Divide un array de filas en chunks e inserta cada chunk como un solo
+ * INSERT multi-fila. Evita exceder max_allowed_packet / límites de
+ * parámetros con volúmenes grandes.
  */
+function outageEventsTask_insertarEnLotes(PDO $pdo, string $sqlTemplate, string $rowPlaceholder, array $filas, int $chunkSize): void
+{
+    foreach (array_chunk($filas, $chunkSize) as $chunk) {
+        $placeholders = implode(',', array_fill(0, count($chunk), $rowPlaceholder));
+        $params = [];
+        foreach ($chunk as $fila) {
+            foreach ($fila as $valor) {
+                $params[] = $valor;
+            }
+        }
+        $pdo->prepare(sprintf($sqlTemplate, $placeholders))->execute($params);
+    }
+}
+
 function outageEventsTask_procesarCategoria(PDO $pdo, string $categoria, int $statusCode): array
 {
     $fecha = date('Y-m-d H:i:s');
-    $abiertos = 0;
-    $cerrados = 0;
 
-    // 1) Estado actual real por puerto: total de ONUs y cuántas están en el
-    // Status de esta categoría, agrupado por OLT+tarjeta+puerto.
+    // 1) Estado agregado por puerto (1 query)
     $stmt = $pdo->prepare(
         "SELECT o.OntOlt AS OltIdApi, g.IndexCard, g.IndexPort,
                 COUNT(*) AS Total,
@@ -72,52 +88,39 @@ function outageEventsTask_procesarCategoria(PDO $pdo, string $categoria, int $st
     $stmt->execute([':statusCode' => $statusCode]);
     $puertos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 2) ONUs afectadas por puerto, para sincronizar el detalle
-    $stmtOnus = $pdo->prepare(
-        "SELECT o.OntId
+    // 2) TODAS las ONUs afectadas de esta categoría (1 query), agrupadas
+    // en memoria por puerto para usarlas al sincronizar el detalle.
+    $stmtOnusTodas = $pdo->prepare(
+        "SELECT o.OntOlt AS OltIdApi, g.IndexCard, g.IndexPort, o.OntId
          FROM onu o
          INNER JOIN gpon g ON g.IdOlt = o.OntGpon
          INNER JOIN potencia p ON p.Onu = o.OntId
-         WHERE o.OntOlt = :olt AND g.IndexCard = :card AND g.IndexPort = :port
-           AND p.Status = :statusCode"
+         WHERE p.Status = :statusCode"
     );
+    $stmtOnusTodas->execute([':statusCode' => $statusCode]);
+    $onusPorPuerto = [];
+    foreach ($stmtOnusTodas->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $key = outageEventsTask_clave($row['OltIdApi'], $row['IndexCard'], $row['IndexPort']);
+        $onusPorPuerto[$key][] = (int) $row['OntId'];
+    }
 
-    // 3) Buscar evento abierto existente para este puerto+categoria
-    $stmtBuscarAbierto = $pdo->prepare(
-        "SELECT IdEvent FROM outage_events
-         WHERE OltIdApi = :olt AND IndexCard = :card AND IndexPort = :port
-           AND Categoria = :categoria AND EsAbierto = 1
-         LIMIT 1"
+    // 3) Eventos abiertos ANTES de tocar nada (1 query). Se usa solo para
+    // decidir qué cerrar; el upsert de abajo no necesita esto porque el
+    // propio UNIQUE KEY resuelve crear-vs-actualizar en el servidor.
+    $stmtAbiertos = $pdo->prepare(
+        "SELECT IdEvent, OltIdApi, IndexCard, IndexPort FROM outage_events
+         WHERE Categoria = :categoria AND EsAbierto = 1"
     );
+    $stmtAbiertos->execute([':categoria' => $categoria]);
+    $abiertosPorPuerto = [];
+    foreach ($stmtAbiertos->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $key = outageEventsTask_clave($row['OltIdApi'], $row['IndexCard'], $row['IndexPort']);
+        $abiertosPorPuerto[$key] = (int) $row['IdEvent'];
+    }
 
-    $stmtCerrar = $pdo->prepare(
-        "UPDATE outage_events SET FechaFin = :fechaFin, UltimaActualizacion = :fechaActualizacion
-         WHERE IdEvent = :id"
-    );
-
-    $stmtActualizar = $pdo->prepare(
-        "UPDATE outage_events
-         SET TipoAlcance = :tipo, OnusAfectadas = :afectadas, OnusTotal = :total,
-             UltimaActualizacion = :fecha
-         WHERE IdEvent = :id"
-    );
-
-    $stmtCrear = $pdo->prepare(
-        "INSERT INTO outage_events
-            (OltIdApi, IndexCard, IndexPort, Categoria, TipoAlcance,
-             OnusAfectadas, OnusTotal, FechaInicio, UltimaActualizacion)
-         VALUES (:olt, :card, :port, :categoria, :tipo, :afectadas, :total, :fechaInicio, :fechaActualizacion)"
-    );
-
-    $stmtBorrarDetalle = $pdo->prepare("DELETE FROM outage_event_onus WHERE IdEvent = :id");
-    $stmtInsertarDetalle = $pdo->prepare(
-        "INSERT IGNORE INTO outage_event_onus (IdEvent, OntId, FechaDetectado)
-         VALUES (:id, :ontId, :fecha)"
-    );
-    // Estrategia de sincronización del detalle: borrar todo + reinsertar el
-    // estado actual en cada ciclo (usado dentro del loop más abajo). Con
-    // pocas ONUs por puerto (típicamente <64) es más simple y seguro que
-    // un diff incremental fila por fila.
+    // Clasificar en memoria (sin tocar la DB todavía)
+    $paraCrearActualizar = []; // puertos con afectadas>0
+    $idsParaCerrar = [];       // eventos abiertos cuyo puerto ya no tiene afectadas
 
     foreach ($puertos as $puerto) {
         $olt   = (int) $puerto['OltIdApi'];
@@ -125,43 +128,81 @@ function outageEventsTask_procesarCategoria(PDO $pdo, string $categoria, int $st
         $port  = (int) $puerto['IndexPort'];
         $total = (int) $puerto['Total'];
         $afectadas = (int) $puerto['Afectadas'];
-
-        $stmtBuscarAbierto->execute([':olt' => $olt, ':card' => $card, ':port' => $port, ':categoria' => $categoria]);
-        $abierto = $stmtBuscarAbierto->fetch(PDO::FETCH_ASSOC);
+        $key = outageEventsTask_clave($olt, $card, $port);
 
         if ($afectadas === 0) {
-            // Sin problema en este puerto: cerrar evento si había uno abierto
-            if ($abierto) {
-                $stmtCerrar->execute([':fechaFin' => $fecha, ':fechaActualizacion' => $fecha, ':id' => $abierto['IdEvent']]);
-                $stmtBorrarDetalle->execute([':id' => $abierto['IdEvent']]);
-                $cerrados++;
+            if (isset($abiertosPorPuerto[$key])) {
+                $idsParaCerrar[] = $abiertosPorPuerto[$key];
             }
             continue;
         }
 
         $tipoAlcance = ($afectadas === $total) ? 'total' : 'parcial';
+        $paraCrearActualizar[] = [$olt, $card, $port, $categoria, $tipoAlcance, $afectadas, $total, $fecha, $fecha];
+    }
 
-        if ($abierto) {
-            $idEvent = $abierto['IdEvent'];
-            $stmtActualizar->execute([
-                ':tipo' => $tipoAlcance, ':afectadas' => $afectadas, ':total' => $total,
-                ':fecha' => $fecha, ':id' => $idEvent,
-            ]);
-        } else {
-            $stmtCrear->execute([
-                ':olt' => $olt, ':card' => $card, ':port' => $port, ':categoria' => $categoria,
-                ':tipo' => $tipoAlcance, ':afectadas' => $afectadas, ':total' => $total,
-                ':fechaInicio' => $fecha, ':fechaActualizacion' => $fecha,
-            ]);
-            $idEvent = (int) $pdo->lastInsertId();
+    $cerrados = count($idsParaCerrar);
+    if ($idsParaCerrar) {
+        // 4) Cerrar TODOS los eventos resueltos en un solo UPDATE...IN(...)
+        $placeholders = implode(',', array_fill(0, count($idsParaCerrar), '?'));
+        $pdo->prepare("UPDATE outage_events SET FechaFin = ?, UltimaActualizacion = ? WHERE IdEvent IN ($placeholders)")
+            ->execute(array_merge([$fecha, $fecha], $idsParaCerrar));
+        // Y su detalle, también en un solo DELETE...IN(...)
+        $pdo->prepare("DELETE FROM outage_event_onus WHERE IdEvent IN ($placeholders)")
+            ->execute($idsParaCerrar);
+    }
+
+    $abiertos = count($paraCrearActualizar);
+    if ($abiertos > 0) {
+        // 5) Crear/actualizar en lotes multi-fila. El UNIQUE KEY
+        // (OltIdApi, IndexCard, IndexPort, Categoria, EsAbierto) hace que
+        // MySQL decida solo si es INSERT nuevo o UPDATE del abierto
+        // existente — no hace falta que PHP pregunte antes por cada fila.
+        // FechaInicio NO se toca en el UPDATE: si ya existía, se conserva
+        // el inicio real del problema aunque haya escalado de parcial a total.
+        $sqlUpsertTemplate =
+            "INSERT INTO outage_events
+                (OltIdApi, IndexCard, IndexPort, Categoria, TipoAlcance,
+                 OnusAfectadas, OnusTotal, FechaInicio, UltimaActualizacion)
+             VALUES %s AS nueva
+             ON DUPLICATE KEY UPDATE
+                TipoAlcance = nueva.TipoAlcance,
+                OnusAfectadas = nueva.OnusAfectadas,
+                OnusTotal = nueva.OnusTotal,
+                UltimaActualizacion = nueva.UltimaActualizacion";
+        outageEventsTask_insertarEnLotes($pdo, $sqlUpsertTemplate, '(?,?,?,?,?,?,?,?,?)', $paraCrearActualizar, 200);
+
+        // 6) Releer eventos abiertos YA con los recién creados incluidos
+        // (1 query) para poder sincronizar el detalle por ONU.
+        $stmtAbiertos->execute([':categoria' => $categoria]);
+        $abiertosPorPuertoFresco = [];
+        foreach ($stmtAbiertos->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $key = outageEventsTask_clave($row['OltIdApi'], $row['IndexCard'], $row['IndexPort']);
+            $abiertosPorPuertoFresco[$key] = (int) $row['IdEvent'];
         }
-        $abiertos++;
+        $idsAbiertosFrescos = array_values($abiertosPorPuertoFresco);
 
-        // Sincronizar detalle por ONU con el estado actual de este puerto
-        $stmtBorrarDetalle->execute([':id' => $idEvent]);
-        $stmtOnus->execute([':olt' => $olt, ':card' => $card, ':port' => $port, ':statusCode' => $statusCode]);
-        foreach ($stmtOnus->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            $stmtInsertarDetalle->execute([':id' => $idEvent, ':ontId' => $row['OntId'], ':fecha' => $fecha]);
+        // 7) Borrar TODO el detalle previo de los eventos que siguen
+        // abiertos en un solo DELETE...IN(...), y volver a insertarlo
+        // completo en lotes multi-fila (en vez de 1 INSERT por ONU).
+        if ($idsAbiertosFrescos) {
+            $placeholders = implode(',', array_fill(0, count($idsAbiertosFrescos), '?'));
+            $pdo->prepare("DELETE FROM outage_event_onus WHERE IdEvent IN ($placeholders)")
+                ->execute($idsAbiertosFrescos);
+        }
+
+        $filasDetalle = [];
+        foreach ($paraCrearActualizar as $fila) {
+            $key = outageEventsTask_clave($fila[0], $fila[1], $fila[2]);
+            $idEvent = $abiertosPorPuertoFresco[$key] ?? null;
+            if (!$idEvent) continue;
+            foreach ($onusPorPuerto[$key] ?? [] as $ontId) {
+                $filasDetalle[] = [$idEvent, $ontId, $fecha];
+            }
+        }
+        if ($filasDetalle) {
+            $sqlDetalleTemplate = "INSERT IGNORE INTO outage_event_onus (IdEvent, OntId, FechaDetectado) VALUES %s";
+            outageEventsTask_insertarEnLotes($pdo, $sqlDetalleTemplate, '(?,?,?)', $filasDetalle, 500);
         }
     }
 

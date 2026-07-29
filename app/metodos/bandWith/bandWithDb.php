@@ -27,32 +27,49 @@ class bandWith extends DbConn {
         return $result->fetchAll();
     }
 
+    /**
+     * VERSION 2: antes hacía 1 INSERT por cada ONU (1 round-trip por fila).
+     * Con miles de lecturas de banda ancha por ciclo y latencia real hacia
+     * la DB remota (.33), esto era una fuente oculta de tiempo dentro de
+     * refresh_db (mismo patrón ya corregido en historial_potencia y
+     * outage_event_onus). Ahora se agrupa en lotes multi-fila.
+     */
     public function insertBand(array $b) {
+        if (empty($b)) return false;
+
         try {
             $this->pdo->beginTransaction();
 
-            $stmt = $this->pdo->prepare(
-                'INSERT INTO band_with (IdOnu, RxBand, TxBand, Date)
-                 VALUES (?, ?, ?, ?)'
-            );
+            $chunkSize = 500;
+            $totalInsertados = 0;
 
-            foreach ($b as $band) {
-                $stmt->execute([
-                    $band['IdOnu'],
-                    $band['Rx'],
-                    $band['Tx'],
-                    $band['Date'],
-                ]);
+            foreach (array_chunk($b, $chunkSize) as $chunk) {
+                $placeholders = implode(',', array_fill(0, count($chunk), '(?,?,?,?)'));
+                $sql = "INSERT INTO band_with (IdOnu, RxBand, TxBand, Date) VALUES $placeholders";
+
+                $params = [];
+                foreach ($chunk as $band) {
+                    $params[] = $band['IdOnu'];
+                    $params[] = $band['Rx'];
+                    $params[] = $band['Tx'];
+                    $params[] = $band['Date'];
+                }
+
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute($params);
+                $totalInsertados += $stmt->rowCount();
             }
 
-            $total = $stmt->rowCount();
-            if ($total > 0) {
+            if ($totalInsertados > 0) {
                 return $this->pdo->commit();
             } else {
                 return $this->pdo->rollBack();
             }
         } catch (\Exception $e) {
-            $this->pdo->rollBack();
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            error_log('[bandWith::insertBand] Fallo en lote: ' . $e->getMessage());
             return false;
         }
     }
