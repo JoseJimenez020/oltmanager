@@ -2,3 +2,5 @@ db/conn.php
 app/metodos/prueba.php
 app/metodos/onus/prueba.php
 app/metodos/gpon/prueba.php
+logs/
+test_snmp.php

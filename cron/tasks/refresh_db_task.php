@@ -2,19 +2,12 @@
 /**
  * cron/tasks/refresh_db_task.php
  *
- * Versión CLI de api/refreshDb.php, pensada para ser incluida por
- * cron/run_all.php mediante `require`. NO usa header() ni echo json_encode();
- * en vez de eso retorna un string-resumen que run_all.php imprime.
+ * Versión CLI de api/refreshDb.php, incluida por cron/run_all.php.
  *
- * Mantiene exactamente la misma secuencia de operaciones que el endpoint web
- * original: leer perfil SNMP de todas las OLTs, clasificar ONUs (existe /
- * nuevo / migracion) -- lo cual ya dispara los inserts de historial_potencia
- * dentro de profileOnu::formatOnu() -- actualizar status/potencia, insertar
- * ONUs nuevas, vlans nuevas, migraciones, y banda ancha.
- *
- * IMPORTANTE: este archivo asume que fue incluido desde cron/run_all.php
- * (dos niveles bajo la raíz del proyecto: cron/tasks/). Si se ejecuta
- * standalone, ajustar las rutas de require_once.
+ * INSTRUMENTADO: cada paso después de getProfiles()/getVlans()/getBands()
+ * (que ya loguean su propio tiempo por OLT dentro de profileOnu.php /
+ * bandWithController.php) ahora también registra su tiempo total, para
+ * localizar los ~537s que quedaban sin explicar en el ciclo completo.
  */
 
 set_time_limit(600);
@@ -25,49 +18,69 @@ require_once(__DIR__ . '/../../app/metodos/potencia/statusOnu.php');
 require_once(__DIR__ . '/../../app/metodos/migracion/migracionStatus.php');
 require_once(__DIR__ . '/../../app/metodos/bandWith/bandWithController.php');
 
+function refreshDbTask_log(string $paso, float $inicio): void
+{
+    $elapsed = round(microtime(true) - $inicio, 2);
+    error_log("[refresh_db_task] $paso tardó {$elapsed}s");
+}
+
 $band = new bandWithController();
 
 try {
     $m = new profileOnu();
     $m->setOlt();
 
-    // Lee SNMP de todas las OLTs (getProfiles() itera self::$ol internamente)
+    // Ya logueado internamente por OLT (profileOnu::getProfiles)
     $profile = $m->getProfiles();
 
-    // Necesario ANTES de formatOnu(): construye self::$gpon, el mapa
-    // serial -> {OntId, IndexOid, OntPos} contra el que se compara cada ONU.
+    $t = microtime(true);
     $m->setGponOnu();
+    refreshDbTask_log('setGponOnu (1a llamada)', $t);
 
-    // Clasifica cada ONU leída por SNMP en existe/migracion/nuevo.
-    // Efecto colateral (por diseño, ver conversación previa): cada ONU en
-    // 'existe' o 'migracion' ya queda registrada en historial_potencia
-    // dentro de este mismo método, sin sesión SNMP adicional.
-    $update = $m->formatOnu($profile);
+    $t = microtime(true);
+    $update = $m->formatOnu($profile); // incluye flushRxHistory() ya en lotes
+    refreshDbTask_log('formatOnu (incluye flush de historial_potencia)', $t);
 
-    // Actualiza status/potencia de ONUs que ya existían con el mismo index
-    $s      = new statusOnu();
+    $t = microtime(true);
+    $s = new statusOnu();
     $status = $s->updateStatus($update['existe']);
+    refreshDbTask_log('updateStatus', $t);
 
-    // Inserta ONUs nuevas detectadas por SNMP que no estaban en DB
+    $t = microtime(true);
     $onus = $m->insertOnus($update['nuevo']);
+    refreshDbTask_log('insertOnus', $t);
 
-    // Refresca el mapa self::$gpon (las recién insertadas ya tienen OntId)
-    // antes de insertar su potencia inicial
+    $t = microtime(true);
     $m->unsetGponOnu();
     $m->setGponOnu();
+    refreshDbTask_log('setGponOnu (2a llamada, tras insertOnus)', $t);
+
+    $t = microtime(true);
     $potencia = $m->insertPotencia($update['nuevo']);
+    refreshDbTask_log('insertPotencia', $t);
 
-    // VLANs nuevas asociadas a ONUs recién detectadas
+    // Ya logueado internamente por OLT (profileOnu::getVlans)
     $vlans = $m->getVlans();
-    $new   = $m->newVlans($update, $vlans);
-    $vlan  = $m->insertVlans($new);
 
-    // Migraciones (ONU que cambió de card/puerto pero es el mismo equipo)
-    $mig       = new migracionStatus();
+    $t = microtime(true);
+    $new  = $m->newVlans($update, $vlans);
+    $vlan = $m->insertVlans($new);
+    refreshDbTask_log('newVlans + insertVlans', $t);
+
+    $t = microtime(true);
+    $mig = new migracionStatus();
     $migracion = $mig->insertMigracion($update['migracion']);
+    refreshDbTask_log('insertMigracion', $t);
 
     sleep(1);
+
+    // getBands() ya logueado internamente por OLT (bandWithController).
+    // insertBand() internamente llama getBands() + el INSERT real a DB;
+    // medimos el total para ver cuánto de esto es la escritura vs la
+    // lectura SNMP ya contabilizada por separado.
+    $t = microtime(true);
     $band->insertBand();
+    refreshDbTask_log('band->insertBand (incluye getBands + INSERT a DB)', $t);
 
     return sprintf(
         'Actualiza: %s | Inserta: %s | Potencia: %s | Vlan: %s | Migracion: %s',
@@ -80,7 +93,5 @@ try {
 
 } catch (\Throwable $e) {
     error_log('[refresh_db_task] Excepción: ' . $e->getMessage());
-    // Re-lanzamos para que runStep() en run_all.php la capture, la loguee
-    // con su propio formato y continúe con los pasos siguientes.
     throw $e;
 }

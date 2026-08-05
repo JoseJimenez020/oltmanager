@@ -28,19 +28,32 @@ class bandWith extends DbConn {
     }
 
     /**
-     * VERSION 2: antes hacía 1 INSERT por cada ONU (1 round-trip por fila).
-     * Con miles de lecturas de banda ancha por ciclo y latencia real hacia
-     * la DB remota (.33), esto era una fuente oculta de tiempo dentro de
-     * refresh_db (mismo patrón ya corregido en historial_potencia y
-     * outage_event_onus). Ahora se agrupa en lotes multi-fila.
+     * VERSION 4: la v3 reiniciaba el timer DESPUES de cada lote exitoso,
+     * pero si el PRIMER lote por sí solo tarda más que el remanente
+     * heredado de getBands() (120s), muere antes de llegar a ese reset.
+     * Esto coincide con la misma lentitud errática del servidor de DB
+     * (.33) que también afecta a purge_historial_potencia (514.7s en la
+     * misma corrida) — probablemente contención/carga del lado del
+     * servidor, no un problema de diseño del query. Mientras se investiga
+     * esa causa de infraestructura, esta versión:
+     *   1) reinicia el timer ANTES de empezar (no depende de lo que haya
+     *      dejado getBands()),
+     *   2) reduce el tamaño de lote de 500 a 200 filas, para acotar
+     *      cuánto puede tardar UN SOLO execute() en el peor caso.
      */
     public function insertBand(array $b) {
         if (empty($b)) return false;
 
+        // No confiar en el remanente que deje cualquier código anterior
+        // (ej. bandWithController::getBands()) — arrancar con presupuesto
+        // fresco antes de la primera escritura.
+        set_time_limit(300);
+
         try {
             $this->pdo->beginTransaction();
 
-            $chunkSize = 500;
+            $chunkSize = 200; // antes 500: lotes más chicos acotan el
+                               // peor caso si el servidor está lento
             $totalInsertados = 0;
 
             foreach (array_chunk($b, $chunkSize) as $chunk) {
@@ -58,6 +71,10 @@ class bandWith extends DbConn {
                 $stmt = $this->pdo->prepare($sql);
                 $stmt->execute($params);
                 $totalInsertados += $stmt->rowCount();
+
+                // Reinicia tras cada lote también, por si el conjunto
+                // completo de lotes (no uno solo) es lo que se alarga.
+                set_time_limit(300);
             }
 
             if ($totalInsertados > 0) {

@@ -58,7 +58,7 @@ class bandWithController
             if (is_null($b))
                 continue;
             $band = array_merge($band, $b);
-            set_time_limit(120);
+            set_time_limit(120);   // <-- cambiar este 120 a 300
         }
         return $band;
     }

@@ -161,17 +161,104 @@ class profileOnu
     public function getProfiles(): array
     {
         $ont = [];
+        // Margen generoso sobre el peor caso normal observado (~47s para
+        // deliciasChihuahua en condiciones sanas). 90s da espacio de
+        // sobra sin dejar que una OLT degradada arrastre el ciclo entero
+        // como pasó el 2026-08-04 (152.75s, 137.61s, 96.91s en la misma
+        // corrida).
+        $timeoutPorOlt = 90;
+
         foreach (self::$ol as $v) {
             $inicio = microtime(true);
-            $p = $this->getProfile($v['OltIdApi']);
+            $p = $this->getProfileAislado($v['OltIdApi'], $timeoutPorOlt);
             $elapsed = round(microtime(true) - $inicio, 2);
-            error_log("[profileOnu::getProfiles] OLT {$v['OltName']} tardo {$elapsed}s");
+            $etiqueta = is_null($p) ? ' (FALLO/TIMEOUT, se omite este ciclo)' : '';
+            error_log("[profileOnu::getProfiles] OLT {$v['OltName']} tardó {$elapsed}s{$etiqueta}");
             if (is_null($p))
                 continue;
             $ont = array_merge($ont, $p);
-            set_time_limit(900);
+            set_time_limit(300);
         }
         return $ont;
+    }
+
+    /**
+     * Corre getProfile($oltIdApi) en un SUBPROCESO PHP independiente con
+     * límite de tiempo forzado por el sistema operativo. Si el hijo no
+     * termina a tiempo, se mata con proc_terminate() (equivalente a
+     * TerminateProcess en Windows) y esta OLT se omite en este ciclo,
+     * sin arrastrar al resto del cron. Se reintenta automáticamente en
+     * el siguiente ciclo (5-10 min después), no requiere intervención.
+     *
+     * Por qué un subproceso y no solo set_time_limit(): PHP no puede
+     * interrumpir de forma confiable una llamada SNMP bloqueada en
+     * Windows (el motor solo revisa el límite entre instrucciones, y una
+     * llamada atascada dentro de la extensión C nunca le da esa
+     * oportunidad). Un proceso hijo sí puede matarse desde afuera sin
+     * depender de que coopere.
+     */
+    private function getProfileAislado(string $oltIdApi, int $timeoutSegundos): ?array
+    {
+        $phpBinary = PHP_BINARY;
+        $script = __DIR__ . '/../../../cron/tasks/fetch_olt_profile.php';
+        $cmd = escapeshellarg($phpBinary) . ' ' . escapeshellarg($script) . ' ' . escapeshellarg($oltIdApi);
+
+        $descriptorspec = [
+            0 => ['pipe', 'r'],
+            1 => ['pipe', 'w'],
+            2 => ['pipe', 'w'],
+        ];
+
+        $process = proc_open($cmd, $descriptorspec, $pipes);
+        if (!is_resource($process)) {
+            error_log("[profileOnu::getProfileAislado] No se pudo lanzar subproceso para OLT $oltIdApi");
+            return null;
+        }
+
+        fclose($pipes[0]);
+        stream_set_blocking($pipes[1], false);
+        stream_set_blocking($pipes[2], false);
+
+        $inicioEspera = time();
+        $salida = '';
+        $matadoPorTimeout = false;
+
+        while (true) {
+            $salida .= stream_get_contents($pipes[1]);
+            $estado = proc_get_status($process);
+
+            if (!$estado['running']) {
+                break;
+            }
+            if ((time() - $inicioEspera) >= $timeoutSegundos) {
+                proc_terminate($process, 9);
+                $matadoPorTimeout = true;
+                error_log("[profileOnu::getProfileAislado] OLT $oltIdApi excedió {$timeoutSegundos}s, proceso terminado forzosamente");
+                break;
+            }
+            usleep(200000); // 200ms entre revisiones
+        }
+
+        $salida .= stream_get_contents($pipes[1]);
+        $errores = stream_get_contents($pipes[2]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        proc_close($process);
+
+        if ($matadoPorTimeout) {
+            return null;
+        }
+
+        if (!empty($errores)) {
+            error_log("[profileOnu::getProfileAislado] stderr de OLT $oltIdApi: " . trim($errores));
+        }
+
+        $decoded = json_decode(trim($salida), true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            error_log("[profileOnu::getProfileAislado] Respuesta inválida del subproceso para OLT $oltIdApi: " . substr($salida, 0, 200));
+            return null;
+        }
+        return $decoded;
     }
 
     public function getProfile($zona): ?array
@@ -228,24 +315,27 @@ class profileOnu
         $sn = self::$gpon;
         $resultado = ['existe' => [], 'migracion' => [], 'nuevo' => []];
         date_default_timezone_set('America/Merida');
-        $fecha = date('Y-m-d H:i:s'); // NUEVO: una sola fecha para todo el ciclo
+        $fecha = date('Y-m-d H:i:s');
+
+        // OPTIMIZACION CRITICA: antes, por cada ONU leída por SNMP (N) se
+        // recorría TODO el mapa de ONUs en DB (M) comparando seriales
+        // normalizados uno por uno => O(N x M). Con miles de ONUs en ambos
+        // lados esto son millones de comparaciones de string y explicaba
+        // ~380s de los ~983s totales del ciclo (medido en producción el
+        // 2026-07-31). Ahora se normaliza el mapa UNA sola vez -> O(M), y
+        // cada búsqueda posterior es O(1) por hash en vez de escaneo lineal.
+        $snNormalizado = [];
+        foreach ($sn as $dbSerial => $dbData) {
+            $snNormalizado[strtoupper(trim($dbSerial))] = $dbData;
+        }
 
         foreach ($onu as $n) {
-            $serial = strtoupper(trim($n['sn']));   // normaliza
-            $index = null;
-            foreach ($sn as $dbSerial => $dbData) {
-                if (strtoupper(trim($dbSerial)) === $serial) {
-                    $index = $dbData;
-                    break;
-                }
-            }
+            $serial = strtoupper(trim($n['sn']));
+            $index = $snNormalizado[$serial] ?? null;         // <-- O(1), sin loop interno
+
             if (isset($index)) {
                 $indexViejo = $index['IndexOid'] . '.' . $index['OntPos'];
-
-                // NUEVO: registrar histórico de RX, el equipo ya existe en DB
-                // sin importar si coincide el puerto (existe) o migró (migracion)
                 $this->insertRxHistory((int) $index['OntId'], $n['rx'], $fecha);
-
                 if ($n['index'] === $indexViejo) {
                     $resultado['existe'][] = $n;
                 } else {
@@ -256,8 +346,8 @@ class profileOnu
                 $resultado['nuevo'][] = $n;
             }
         }
-        $this->flushRxHistory(); // NUEVO: un solo lote de inserts, no uno por ONU
 
+        $this->flushRxHistory();
         return $resultado;
     }
 }
