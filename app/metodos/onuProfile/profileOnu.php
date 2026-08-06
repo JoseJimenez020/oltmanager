@@ -201,49 +201,69 @@ class profileOnu
     {
         $phpBinary = PHP_BINARY;
         $script = __DIR__ . '/../../../cron/tasks/fetch_olt_profile.php';
-        $cmd = escapeshellarg($phpBinary) . ' ' . escapeshellarg($script) . ' ' . escapeshellarg($oltIdApi);
+        $cmd = [$phpBinary, $script, (string) $oltIdApi];
+
+        // Archivos temporales para stdout/stderr del hijo. Nombre único
+        // por llamada (tempnam) para que corridas/OLTs concurrentes o
+        // consecutivas nunca se pisen entre sí.
+        $archivoSalida = tempnam(sys_get_temp_dir(), 'olt_profile_out_');
+        $archivoErrores = tempnam(sys_get_temp_dir(), 'olt_profile_err_');
 
         $descriptorspec = [
             0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w'],
+            1 => ['file', $archivoSalida, 'w'],
+            2 => ['file', $archivoErrores, 'w'],
         ];
 
-        $process = proc_open($cmd, $descriptorspec, $pipes);
+        $opciones = ['bypass_shell' => true];
+
+        $process = proc_open($cmd, $descriptorspec, $pipes, null, null, $opciones);
         if (!is_resource($process)) {
             error_log("[profileOnu::getProfileAislado] No se pudo lanzar subproceso para OLT $oltIdApi");
+            @unlink($archivoSalida);
+            @unlink($archivoErrores);
             return null;
         }
 
+        // No se necesita enviar nada al hijo por stdin.
         fclose($pipes[0]);
-        stream_set_blocking($pipes[1], false);
-        stream_set_blocking($pipes[2], false);
 
         $inicioEspera = time();
-        $salida = '';
         $matadoPorTimeout = false;
 
+        // Polling simple: SOLO se consulta el estado del proceso, sin
+        // tocar ningún pipe. Esto es lo que sí funciona de forma
+        // confiable en Windows.
         while (true) {
-            $salida .= stream_get_contents($pipes[1]);
             $estado = proc_get_status($process);
 
             if (!$estado['running']) {
                 break;
             }
+
             if ((time() - $inicioEspera) >= $timeoutSegundos) {
                 proc_terminate($process, 9);
                 $matadoPorTimeout = true;
                 error_log("[profileOnu::getProfileAislado] OLT $oltIdApi excedió {$timeoutSegundos}s, proceso terminado forzosamente");
                 break;
             }
+
             usleep(200000); // 200ms entre revisiones
         }
 
-        $salida .= stream_get_contents($pipes[1]);
-        $errores = stream_get_contents($pipes[2]);
-        fclose($pipes[1]);
-        fclose($pipes[2]);
         proc_close($process);
+
+        // Pequeño margen para que Windows termine de soltar el archivo
+        // tras matar el proceso, antes de intentar leerlo.
+        if ($matadoPorTimeout) {
+            usleep(100000);
+        }
+
+        $salida = @file_get_contents($archivoSalida);
+        $errores = @file_get_contents($archivoErrores);
+
+        @unlink($archivoSalida);
+        @unlink($archivoErrores);
 
         if ($matadoPorTimeout) {
             return null;
@@ -253,13 +273,14 @@ class profileOnu
             error_log("[profileOnu::getProfileAislado] stderr de OLT $oltIdApi: " . trim($errores));
         }
 
-        $decoded = json_decode(trim($salida), true);
+        $decoded = json_decode(trim((string) $salida), true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log("[profileOnu::getProfileAislado] Respuesta inválida del subproceso para OLT $oltIdApi: " . substr($salida, 0, 200));
+            error_log("[profileOnu::getProfileAislado] Respuesta inválida del subproceso para OLT $oltIdApi: " . substr((string) $salida, 0, 200));
             return null;
         }
         return $decoded;
     }
+
 
     public function getProfile($zona): ?array
     {
