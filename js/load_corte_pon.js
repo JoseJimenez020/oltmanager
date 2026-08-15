@@ -60,10 +60,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         seccion.grupos.forEach((g, idx) => {
             const grupoId = `vs-${idx}`;
+            // CAMBIO: el chevron arranca con "is-collapsed" para verse
+            // apuntando a la derecha (colapsado) desde el primer render.
             html += `
                 <tr class="cp-fila-grupo" data-toggle-fila="${grupoId}">
                     <td class="cp-fila-grupo__nombre">
-                        <span class="cp-chevron-fila material-symbols-outlined">expand_more</span>
+                        <span class="cp-chevron-fila material-symbols-outlined is-collapsed">expand_more</span>
                         <span class="cp-dot cp-dot--${g.severidad}"></span>
                         ${g.olt_id} - ${escapeHtml(g.olt_name)}
                     </td>
@@ -73,15 +75,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     <td>${g.eventos_6h}</td>
                     <td>${escapeHtml(g.ultimo_escaneo)}</td>
                 </tr>
-                <tr class="cp-fila-detalle-header" data-fila-detalle="${grupoId}">
+                <tr class="cp-fila-detalle-header" data-fila-detalle="${grupoId}" style="display:none">
                     <td>ONU</td><td>Previous</td><td>Current</td><td>Var (dBm)</td><td>Eventos (6h)</td><td></td>
                 </tr>`;
 
             g.onus.forEach(onu => {
                 const varClase = onu.var > 0 ? 'cp-var--pos' : (onu.var < 0 ? 'cp-var--neg' : 'cp-var--neutro');
                 const varTexto = (onu.var > 0 ? '+' : '') + onu.var.toFixed(1);
+                // CAMBIO: style="display:none" desde el primer render.
                 html += `
-                    <tr class="cp-fila-onu" data-fila-detalle="${grupoId}">
+                    <tr class="cp-fila-onu" data-fila-detalle="${grupoId}" style="display:none">
                         <td>${escapeHtml(onu.interfaz)} (<a href="ont.php?id=${onu.onu_id}">${escapeHtml(onu.serial)}</a>)</td>
                         <td>${onu.previous.toFixed(1)}</td>
                         <td>${onu.current.toFixed(1)}</td>
@@ -124,10 +127,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         seccion.grupos.forEach((g, idx) => {
             const grupoId = `${nombrePanel}-${idx}`;
+            // CAMBIO: chevron colapsado desde el primer render.
             html += `
                 <tr class="cp-fila-grupo" data-toggle-fila="${grupoId}">
                     <td class="cp-fila-grupo__nombre">
-                        <span class="cp-chevron-fila material-symbols-outlined">expand_more</span>
+                        <span class="cp-chevron-fila material-symbols-outlined is-collapsed">expand_more</span>
                         ${g.olt_id} - ${escapeHtml(g.olt_name)}
                     </td>
                     <td>${g.total_pons} PON${g.total_pons !== 1 ? 's' : ''}</td>
@@ -136,8 +140,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 </tr>`;
 
             g.puertos.forEach(p => {
+                // CAMBIO: style="display:none" desde el primer render.
                 html += `
-                    <tr class="cp-fila-onu" data-fila-detalle="${grupoId}">
+                    <tr class="cp-fila-onu" data-fila-detalle="${grupoId}" style="display:none">
                         <td>Tarjeta/Puerto&nbsp;&nbsp;${p.tarjeta} / ${p.puerto}</td>
                         <td></td>
                         <td>${p.onus_afectadas}/${p.onus_total} ONUs (${p.porcentaje}%)</td>
@@ -170,10 +175,13 @@ document.addEventListener('DOMContentLoaded', function () {
             fila.addEventListener('click', () => {
                 const id = fila.getAttribute('data-toggle-fila');
                 const chevron = fila.querySelector('.cp-chevron-fila');
-                const colapsando = !chevron.classList.contains('is-collapsed');
-                chevron.classList.toggle('is-collapsed', colapsando);
+                // Como ahora arrancan colapsados (is-collapsed presente),
+                // el primer clic debe EXPANDIR: se invierte la lógica
+                // respecto al estado actual del chevron.
+                const expandiendo = chevron.classList.contains('is-collapsed');
+                chevron.classList.toggle('is-collapsed', !expandiendo);
                 contenedor.querySelectorAll(`[data-fila-detalle="${id}"]`).forEach(detalle => {
-                    detalle.style.display = colapsando ? 'none' : '';
+                    detalle.style.display = expandiendo ? '' : 'none';
                 });
             });
         });

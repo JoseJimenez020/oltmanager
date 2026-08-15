@@ -1,30 +1,30 @@
 <?php
 /**
  * cron/run_all.php
+ * DEPLOY: C:\xampp\htdocs\oltmanager\cron\run_all.php
  *
  * Orquestador único para las tareas periódicas de OLT Manager.
- * Reemplaza los dos .bat (refresh_cron.bat y el de refreshDb.php) para que
- * NUNCA corran en paralelo y compitan por sesiones SNMP contra las mismas OLTs.
  *
- * Orden de ejecución (secuencial, nunca paralelo):
- *   1. refresh_db            -> lee SNMP de todas las OLTs, actualiza status/potencia,
- *                                inserta vlans nuevas, migra ONUs, banda ancha.
- *                                Ya escribe historial_potencia dentro de profileOnu::formatOnu().
- *   2. unconfigured_cache    -> cuenta ONUs desautorizadas por OLT (para el dashboard).
- *   3. purge_historial       -> elimina filas de historial_potencia mayores a N días.
+ * CAMBIOS EN ESTA VERSIÓN:
+ *   1. Orden corregido: refresh_db corre PRIMERO (actualiza Status/Potencia),
+ *      luego unconfigured_cache, luego outage_events (que depende del
+ *      Status recién actualizado — antes corría con datos del ciclo previo).
+ *   2. purge_historial_potencia ahora borra EN LOTES (antes era un solo
+ *      DELETE sin límite que, sobre una tabla de millones de filas y
+ *      cross-VM, probablemente nunca terminaba a tiempo — por eso quedaban
+ *      registros de semanas atrás pese a la retención de 7 días).
+ *   3. No se agrega aquí la tarea de variaciones_senal_cache: esa corre
+ *      cada hora vía su propia tarea de Task Scheduler
+ *      (cron/tasks/variaciones_senal_cache_task.php), independiente de
+ *      este ciclo de ~7 min, tal como se acordó.
  *
- * Este script se ejecuta por CRON del sistema (Task Scheduler de Windows),
- * NUNCA por una petición web.
- *
- * INSTALACION (reemplaza ambas tareas anteriores por esta única):
+ * INSTALACION (sin cambios, sigue igual):
  *   schtasks /create /tn "OltManager RunAll" /tr "C:\xampp\htdocs\oltmanager\cron\run_all.bat" /sc minute /mo 6 /f
  **/
 
 set_time_limit(0);
 date_default_timezone_set('America/Merida');
 
-// ---- Lock global: evita que una corrida se solape con la anterior si tarda
-// más de los 6 minutos entre disparos del Task Scheduler ----
 $lockFile = __DIR__ . '/run_all.lock';
 $lockHandle = fopen($lockFile, 'c');
 if (!$lockHandle || !flock($lockHandle, LOCK_EX | LOCK_NB)) {
@@ -32,15 +32,8 @@ if (!$lockHandle || !flock($lockHandle, LOCK_EX | LOCK_NB)) {
     exit(0);
 }
 
-// Días de retención para historial_potencia. Suficiente para ventanas de 6h
-// y comparativas de "variaciones de señal"; ajustar si se necesita más rango
-// para el histórico de "LOS parcial / Desde".
 define('HISTORIAL_POTENCIA_RETENCION_DIAS', 7);
 
-/**
- * Ejecuta un paso nombrado, mide tiempo, captura cualquier excepción para
- * que un fallo en un paso NO detenga los pasos siguientes.
- */
 function runStep(string $name, callable $fn): void
 {
     $start = microtime(true);
@@ -59,35 +52,45 @@ function runStep(string $name, callable $fn): void
 
 try {
 
+    // ---- Paso 1: refresh_db (SNMP -> DB). Debe ir PRIMERO: todo lo demás
+    // depende de Status/Potencia/historial_potencia recién actualizados ----
+    runStep('refresh_db', function () {
+        return require __DIR__ . '/tasks/refresh_db_task.php';
+    });
+
     // ---- Paso 2: cache de ONUs desautorizadas (para el dashboard) ----
     runStep('unconfigured_cache', function () {
         return require __DIR__ . '/tasks/unconfigured_cache_task.php';
     });
 
-    // ---- Paso 3: eventos de outage (LOS parcial/total, PwrFail, Offline)
-    // por puerto GPON. Debe correr DESPUÉS de refresh_db (paso 1), ya que
-    // depende del Status de `potencia` recién actualizado por SNMP. ----
+    // ---- Paso 3: eventos de outage. Ahora sí corre DESPUÉS de refresh_db,
+    // usando el Status del ciclo actual y no el del ciclo anterior ----
     runStep('outage_events', function () {
         return require __DIR__ . '/tasks/outage_events_task.php';
     });
 
-    // ---- Paso 4: purga de historial_potencia para no crecer indefinidamente ----
+    // ---- Paso 4: purga de historial_potencia EN LOTES. Antes era un solo
+    // DELETE sin límite: sobre una tabla de millones de filas cruzando la
+    // VM de BD, ese DELETE probablemente nunca alcanzaba a completar
+    // dentro del ciclo, dejando basura de semanas pese a la retención
+    // configurada de 7 días. Ahora borra en bloques de 5000 hasta agotar,
+    // reiniciando el timer entre lotes igual que en bandWith/potencia. ----
     runStep('purge_historial_potencia', function () {
         require_once(__DIR__ . '/../db/conn.php');
         $pdo = (new DbConn())->getPdo();
         $dias = HISTORIAL_POTENCIA_RETENCION_DIAS;
-        $stmt = $pdo->prepare("DELETE FROM historial_potencia WHERE HFecha < (NOW() - INTERVAL :dias DAY)");
-        $stmt->bindValue(':dias', $dias, PDO::PARAM_INT);
-        $stmt->execute();
-        return "{$stmt->rowCount()} filas eliminadas (retención: {$dias} días)";
-    });
-
-
-
-    // ---- Paso 1: refresh_db (SNMP -> DB: status, potencia, historial_potencia,
-    // vlans, migraciones, banda ancha) ----
-    runStep('refresh_db', function () {
-        return require __DIR__ . '/tasks/refresh_db_task.php';
+        $totalEliminadas = 0;
+        $stmt = $pdo->prepare(
+            "DELETE FROM historial_potencia WHERE HFecha < (NOW() - INTERVAL :dias DAY) LIMIT 5000"
+        );
+        do {
+            $stmt->bindValue(':dias', $dias, PDO::PARAM_INT);
+            $stmt->execute();
+            $borradas = $stmt->rowCount();
+            $totalEliminadas += $borradas;
+            set_time_limit(300);
+        } while ($borradas > 0);
+        return "{$totalEliminadas} filas eliminadas en total (retención: {$dias} días)";
     });
 
     echo "[" . date('Y-m-d H:i:s') . "] Ciclo completo.\n\n";
