@@ -92,20 +92,35 @@ class oltProfile extends DbConn
             $stmtMax = $this->pdo->query("SELECT COALESCE(MAX(OltIdApi), 0) + 1 FROM olts_list");
             $nextId  = (int) $stmtMax->fetchColumn();
 
+            // NOTA IMPORTANTE: `olts_list.OltIpPublic` es NOT NULL sin
+            // default en el esquema (ver OLTMStructure13082026.sql). El
+            // INSERT anterior no incluía esta columna, por lo que MySQL
+            // rechazaba la inserción con "Field 'OltIpPublic' doesn't
+            // have a default value" -> PDOException -> catch -> false.
+            // Esto explicaba por qué se podía editar/eliminar (UPDATE/
+            // DELETE nunca tocan esa columna) pero nunca insertar una
+            // OLT nueva desde el formulario.
+            //
+            // El formulario actual solo captura una IP (privada, usada
+            // para SNMP/Telnet). OltIpPublic no se usa en ningún otro
+            // punto del código para conexiones reales, así que aquí se
+            // replica el mismo valor para satisfacer el NOT NULL sin
+            // requerir un campo nuevo en el formulario.
             $stmt = $this->pdo->prepare(
                 'INSERT INTO olts_list
-                    (OltIdApi, OltName, OltHardVer, OltIpPrivate,
+                    (OltIdApi, OltName, OltHardVer, OltIpPublic, OltIpPrivate,
                      OltTelnetPort, OltSnmpPort,
                      UserTelnet, PassTelnet,
                      ReadComm, WriteComm, SoftVer)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
             );
 
             $stmt->execute([
                 $nextId,
                 $data['olt_name'],
                 $data['hardware_version'],
-                $data['olt_ip'],
+                $data['olt_ip'],   // OltIpPublic (mismo valor, ver nota arriba)
+                $data['olt_ip'],   // OltIpPrivate
                 $data['telnet_port'],
                 $data['snmp_port'],
                 $data['telnet_user'],
@@ -127,7 +142,7 @@ class oltProfile extends DbConn
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
-            // Para depuración: error_log('InsertOlt error: ' . $e->getMessage());
+            error_log('InsertOlt error: ' . $e->getMessage());
             return false;
         }
     }
