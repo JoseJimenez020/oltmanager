@@ -4,45 +4,90 @@ require_once(__DIR__ . '../../../../db/conn.php');
 class potenciaDb extends DbConn
 {
 
+    /**
+     * VERSION 2 (2026-08-17): antes este INSERT no tenía ninguna
+     * protección contra duplicados. Cuando formatOnu() clasifica por
+     * error a una ONU ya existente como "nueva" -confirmado que ocurre
+     * sobre todo en eventos de PwrFail, donde el serial reportado por
+     * SNMP puede venir en un formato distinto al guardado en `onu`-
+     * esta función insertaba una fila NUEVA de potencia cada vez, sin
+     * tocar la fila real de esa ONU. La tabla `onu` está protegida por
+     * el UNIQUE KEY uniq_onu_sn y por eso nunca se duplicó ahí, pero
+     * `potencia` no tenía guardia equivalente: con miles de estos
+     * eventos acumulados en un año, infló la tabla a 171,670 filas para
+     * solo 18,803 ONUs reales.
+     *
+     * Ahora que `potencia` tiene UNIQUE KEY sobre `Onu` (ver
+     * db/alter_potencia_unique_onu.sql), se usa
+     * INSERT ... ON DUPLICATE KEY UPDATE: si la fila ya existe, se
+     * actualiza con la lectura más reciente en vez de crear una fila
+     * nueva. Esto no arregla la causa raíz de la mala clasificación,
+     * pero convierte su efecto de "fuga de filas que crece para
+     * siempre" a un no-op inofensivo.
+     */
     public function insertPotencia($onu, $date)
     {
-        try {
+        if (empty($onu)) return false;
 
+        try {
             $this->pdo->beginTransaction();
 
-            $stmt = $this->pdo->prepare('INSERT 
-                                INTO potencia (Potencia,Status,Distancia,Date,Onu) 
-                                VALUES (?,?,?,?,?)');
-            $totalUpdates = 0;
+            $stmt = $this->pdo->prepare(
+                'INSERT INTO potencia (Potencia, Status, Distancia, Date, Onu)
+                 VALUES (?,?,?,?,?)
+                 ON DUPLICATE KEY UPDATE
+                    Potencia  = VALUES(Potencia),
+                    Status    = VALUES(Status),
+                    Distancia = VALUES(Distancia),
+                    Date      = VALUES(Date)'
+            );
+
             foreach ($onu as $p) {
                 $stmt->execute([$p['rx'], $p['sta'], $p['dis'], $date, $p['id']]);
-                $totalUpdates += $stmt->rowCount();
             }
-            if ($totalUpdates > 0) {
-                return $this->pdo->commit();
-            } else {
-                return $this->pdo->rollBack();
+
+            // NOTA: con ON DUPLICATE KEY UPDATE, rowCount() de MySQL no es
+            // confiable como señal de éxito (puede devolver 0 si los
+            // valores no cambiaron). Si no hubo excepción, se confirma.
+            return $this->pdo->commit();
+        } catch (\Throwable $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
             }
-        } catch (Exception $e) {
-            return $this->pdo->rollBack();
+            error_log('[potenciaDb::insertPotencia] Fallo: ' . $e->getMessage());
+            return false;
         }
     }
+
+    /**
+     * VERSION 2 (2026-08-17): mismo fix que insertPotencia() de arriba,
+     * aplicado a la inserción de una sola ONU (usada en el flujo de
+     * autorización manual, api/onuProfile.php POST accion=Auth).
+     */
     public function insertOnePotencia($p, $date)
     {
-        // Start transaction
-        $this->pdo->beginTransaction();
+        try {
+            $this->pdo->beginTransaction();
 
-        // Prepare statement
-        $stmt = $this->pdo->prepare('INSERT 
-                                INTO potencia (Potencia,Status,Distancia,Date,Onu) 
-                                VALUES (?,?,?,?,?)');
+            $stmt = $this->pdo->prepare(
+                'INSERT INTO potencia (Potencia, Status, Distancia, Date, Onu)
+                 VALUES (?,?,?,?,?)
+                 ON DUPLICATE KEY UPDATE
+                    Potencia  = VALUES(Potencia),
+                    Status    = VALUES(Status),
+                    Distancia = VALUES(Distancia),
+                    Date      = VALUES(Date)'
+            );
+            $stmt->execute([$p['rx'], $p['sta'], $p['dis'], $date, $p['id']]);
 
-        // All seven parameters are passed into the execute() in a form of an array
-        $stmt->execute([$p['rx'], $p['sta'], $p['dis'], $date, $p['id']]);
-
-
-        // Commit the data into the database
-        $this->pdo->commit();
+            return $this->pdo->commit();
+        } catch (\Throwable $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            error_log('[potenciaDb::insertOnePotencia] Fallo: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**
