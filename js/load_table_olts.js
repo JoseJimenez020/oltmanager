@@ -46,7 +46,7 @@ $(document).ready(async function () {
                 ordering: true,
                 info: true,
                 lengthMenu: [5, 10, 25, 50],
-                pageLength: 5,
+                pageLength: 50,
                 language: {
                     lengthMenu: "Mostrar _MENU_ registros por página",
                     zeroRecords: "No se encontraron resultados",

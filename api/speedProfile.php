@@ -1,5 +1,4 @@
 <?php
-require_once(__DIR__ . '../../app/class/Olt.php');
 require_once(__DIR__ . '../../app/metodos/oltProfile/oltProfileController.php');
 require_once(__DIR__ . '../../app/metodos/onuProfile/onuProfileController.php');
 require_once(__DIR__ . '../../app/metodos/speedProfile/speedProfileController.php');

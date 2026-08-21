@@ -41,8 +41,8 @@ $(document).ready(async function () {
                 searching: true,
                 ordering: true,
                 info: true,
-                lengthMenu: [5, 10, 25, 50],
-                pageLength: 100,
+                lengthMenu: [5, 10, 25, 50, 100, 150],
+                pageLength: 200,
                 language: {
                     lengthMenu: "Mostrar _MENU_ registros por página",
                     zeroRecords: "No se encontraron resultados",
