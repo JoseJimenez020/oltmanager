@@ -1,12 +1,22 @@
 <?php
+//app/metodos/snmp/speedProfile.php
 require_once(__DIR__ . '/oltSnmp.php');
 
 class speedProfileS extends nSnmp{
     public function __construct($host = '',$comm=''){
-        if ($host!='') $open = new nSnmp($host,$comm);
+        // FIX: antes se creaba `new nSnmp($host,$comm)` en una variable local
+        // ($open) que nunca se asignaba a $this, así que $this->sesion (heredado
+        // de nSnmp) se quedaba en null. getTcont()/getGemport() siempre
+        // regresaban ['error'=>'No sesion'] sin que nadie lo notara, y esos
+        // "datos" terminaban insertados en speed_profile_olts.
+        parent::__construct($host, $comm);
     }
     public function close(){
-        parent::close();
+        // nSnmp::close() no valida sesión nula; evitamos fatal si el perfil
+        // SNMP no se pudo resolver (host inválido, OLT inactiva, etc.)
+        if ($this->sesion) {
+            parent::close();
+        }
     }
     public function deleteQuote($var){
         $findString=substr($var,0,1);
