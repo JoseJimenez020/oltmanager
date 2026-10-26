@@ -291,6 +291,8 @@ class profileOnu
         $down = $this->speed->getSpeed('down', $zona);
         $r = $s->getProfile();
         $s->close();
+        $omitidasGpon = 0;
+        $omitidasSpeed = 0;
 
         if (is_null($r))
             return null;
@@ -300,6 +302,15 @@ class profileOnu
             $indexOid = $r[$i]['index'];
             $tcontIndex = $r[$i]['tcont'];
             $gemportIndex = $r[$i]['gemport'];
+
+            if (!isset($g[$indexOid])) {
+                $omitidasGpon++;
+                continue;
+            }
+            if (!isset($up[$tcontIndex]) || !isset($down[$gemportIndex])) {
+                $omitidasSpeed++;
+                continue;
+            }
 
             // El index SNMP no existe en la tabla gpon: la ONU no está registrada
             // en la DB todavía. Se omite para no generar el Warning.
@@ -327,6 +338,9 @@ class profileOnu
                 'gemport' => $down[$gemportIndex][0],
                 'olt' => $zona,
             ];
+        }
+        if ($omitidasGpon || $omitidasSpeed) {
+            error_log("[profileOnu::getProfile] OLT $zona omitió $omitidasGpon sin gpon, $omitidasSpeed sin speed profile");
         }
         return $n;
     }
