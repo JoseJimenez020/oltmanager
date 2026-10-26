@@ -107,28 +107,14 @@ require '../controllers/privilegios.php';
                     <table id="oltsgeneralTable" class="display">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>2F Auth</th>
-                                <th>Group</th>
-                                <th>Restriction</th>
-                                <th>Status</th>
-                                <th>Last login</th>
-                                <th>Action</th>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Teléfono</th>
+                                <th>Grupo</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Info</td>
-                                <td><a href="#"></a></td>
-                                <td>Info</td>
-                                <td>Info</td>
-                                <td>Info</td>
-                                <td><button class="open-modal" data-name="Info" data-status="Active">Info</button></td>
-                                <td>Info</td>
-                                <td><button class="delete" data-name="Info">Delete</button></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="usersTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -192,6 +178,8 @@ require '../controllers/privilegios.php';
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="../js/theme_toggler.js"></script>
     <script src="../js/olt_manager_front_styles.js"></script>
+    <script src="../js/olt_manager_front_styles.js"></script>
+    <script src="../js/load_users.js"></script>
 </body>
 
 </html>
