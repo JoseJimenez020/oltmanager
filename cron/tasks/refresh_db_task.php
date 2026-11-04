@@ -34,10 +34,6 @@ try {
     $profile = $m->getProfiles();
 
     $t = microtime(true);
-    $m->setGponOnu();
-    refreshDbTask_log('setGponOnu (1a llamada)', $t);
-
-    $t = microtime(true);
     $update = $m->formatOnu($profile); // incluye flushRxHistory() ya en lotes
     refreshDbTask_log('formatOnu (incluye flush de historial_potencia)', $t);
 
@@ -72,6 +68,11 @@ try {
     $migracion = $mig->insertMigracion($update['migracion']);
     refreshDbTask_log('insertMigracion', $t);
 
+    
+    $t = microtime(true);
+    $m->flushRxHistory();
+    refreshDbTask_log('flushRxHistory', $t);
+
     sleep(1);
 
     // getBands() ya logueado internamente por OLT (bandWithController).
@@ -89,7 +90,7 @@ try {
         var_export($potencia, true),
         var_export($vlan, true),
         var_export($migracion, true)
-    );
+    );    
 
 } catch (\Throwable $e) {
     error_log('[refresh_db_task] Excepción: ' . $e->getMessage());

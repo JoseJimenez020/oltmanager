@@ -106,21 +106,17 @@ require '../controllers/privilegios.php';
                             <img src="../img/plus.svg" alt="Add"> Add Zone
                         </button>
                     </div>
-                    <p>Utilice zonas para agrupar las ONU por ciudad, barrio o aldea. Las zonas son simples separaciones
+                    <p>Utilice zonas para agrupar las ONU por ciudad, barrio o colonia. Las zonas son simples
+                        separaciones
                         de visualización que no influyen en la configuración de la ONU.</p>
                     <table id="zonesTable" class="display">
                         <thead>
                             <tr>
                                 <th>Nombre</th>
-                                <th>Action</th>
+                                <th>ONUs</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Info</td>
-                                <td><button class="delete">Delete</button></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="zonesTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -151,7 +147,7 @@ require '../controllers/privilegios.php';
         </main>
 
         <!-- Modal para la confirmación de eliminación -->
-        <div id="modalDeleteZone" class="modal">
+        <div id="modalDeleteZone" class="modal" style="display: none;">
             <div class="modal-content flex fle-row">
                 <p>¿Estás seguro que deseas eliminar la zona -<span id="modalDeleteZoneName">Zona 1</span>?</p>
                 <div class="container_delete_option">
@@ -180,8 +176,9 @@ require '../controllers/privilegios.php';
                 </div>
                 <div class="profile">
                     <div class="info">
-                        <?php echo isset($sesion) ? "<p>Bienvenido, <b>" . obtenerNombre($sesion['UsuarioNombre']) . "</b></p>" : "<p><b>Inicia sesión</b></p>"?>
-                        <small class="text-muted"><?php echo isset($sesion) ?  $sesion['PrivilegioNombre'] : "" ?></small>
+                        <?php echo isset($sesion) ? "<p>Bienvenido, <b>" . obtenerNombre($sesion['UsuarioNombre']) . "</b></p>" : "<p><b>Inicia sesión</b></p>" ?>
+                        <small
+                            class="text-muted"><?php echo isset($sesion) ? $sesion['PrivilegioNombre'] : "" ?></small>
                     </div>
                     <div class="profile-photo">
                         <!-- <img src="profile-1.jpg" alt=""> -->
