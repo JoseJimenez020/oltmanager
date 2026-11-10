@@ -42,31 +42,25 @@ class profileOnu
      * la DB remota, un INSERT individual por fila puede sumar minutos; en
      * lotes de 500 filas, el mismo trabajo toma segundos.
      */
-    private function flushRxHistory(): void
+    // 1) hacerlo público
+    public function flushRxHistory(): void
     {
         if (empty($this->pendingRxHistory))
             return;
-
-        $chunkSize = 500;
-        $chunks = array_chunk($this->pendingRxHistory, $chunkSize);
-
-        foreach ($chunks as $chunk) {
+        foreach (array_chunk($this->pendingRxHistory, 500) as $chunk) {
+            set_time_limit(300);   // <-- reinicia el timer por lote
             $placeholders = implode(',', array_fill(0, count($chunk), '(?,?,?)'));
-            $sql = "INSERT INTO historial_potencia (IdOnu, RxOnu, HFecha) VALUES $placeholders";
             $params = [];
             foreach ($chunk as $row) {
-                $params[] = $row[0];
-                $params[] = $row[1];
-                $params[] = $row[2];
+                array_push($params, $row[0], $row[1], $row[2]);
             }
             try {
-                $this->pdo->prepare($sql)->execute($params);
+                $this->pdo->prepare("INSERT INTO historial_potencia (IdOnu, RxOnu, HFecha) VALUES $placeholders")->execute($params);
             } catch (\Throwable $e) {
                 error_log("[profileOnu::flushRxHistory] Fallo en lote: " . $e->getMessage());
             }
         }
-
-        $this->pendingRxHistory = []; // liberar memoria tras escribir
+        $this->pendingRxHistory = [];
     }
 
     public function insertOnus($ont)
@@ -291,6 +285,8 @@ class profileOnu
         $down = $this->speed->getSpeed('down', $zona);
         $r = $s->getProfile();
         $s->close();
+        $omitidasGpon = 0;
+        $omitidasSpeed = 0;
 
         if (is_null($r))
             return null;
@@ -300,6 +296,15 @@ class profileOnu
             $indexOid = $r[$i]['index'];
             $tcontIndex = $r[$i]['tcont'];
             $gemportIndex = $r[$i]['gemport'];
+
+            if (!isset($g[$indexOid])) {
+                $omitidasGpon++;
+                continue;
+            }
+            if (!isset($up[$tcontIndex]) || !isset($down[$gemportIndex])) {
+                $omitidasSpeed++;
+                continue;
+            }
 
             // El index SNMP no existe en la tabla gpon: la ONU no está registrada
             // en la DB todavía. Se omite para no generar el Warning.
@@ -327,6 +332,9 @@ class profileOnu
                 'gemport' => $down[$gemportIndex][0],
                 'olt' => $zona,
             ];
+        }
+        if ($omitidasGpon || $omitidasSpeed) {
+            error_log("[profileOnu::getProfile] OLT $zona omitió $omitidasGpon sin gpon, $omitidasSpeed sin speed profile");
         }
         return $n;
     }
@@ -368,7 +376,6 @@ class profileOnu
             }
         }
 
-        $this->flushRxHistory();
         return $resultado;
     }
 }
