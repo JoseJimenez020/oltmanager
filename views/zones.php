@@ -112,15 +112,10 @@ require '../controllers/privilegios.php';
                         <thead>
                             <tr>
                                 <th>Nombre</th>
-                                <th>Action</th>
+                                <th>ONUs</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Info</td>
-                                <td><button class="delete">Delete</button></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="zonesTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -151,7 +146,7 @@ require '../controllers/privilegios.php';
         </main>
 
         <!-- Modal para la confirmación de eliminación -->
-        <div id="modalDeleteZone" class="modal">
+        <div id="modalDeleteZone" class="modal" style="display: none;">
             <div class="modal-content flex fle-row">
                 <p>¿Estás seguro que deseas eliminar la zona -<span id="modalDeleteZoneName">Zona 1</span>?</p>
                 <div class="container_delete_option">

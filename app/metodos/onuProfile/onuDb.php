@@ -142,28 +142,29 @@ class onuProfile extends DbConn
     public function insertOnus($onu)
     {
         try {
-        
-        $this->pdo->beginTransaction();
 
-        // Prepare statement
-        $stmt = $this->pdo->prepare('INSERT 
+            $this->pdo->beginTransaction();
+
+            // Prepare statement
+            $stmt = $this->pdo->prepare('INSERT 
                                 INTO onu (OntGpon, OntNombre, OntModelo,OnuSn, OntZona,OntOlt,OntPos,OntSpeedUp,OntSpeedDown) 
                                 VALUES (?,?,?,?,?,?,?,?,?)');
-        $totalUpdates = 0;
-        //for ($i = 0; $i < count($p); $i++) {
-        foreach ($onu as $p){
-            // All seven parameters are passed into the execute() in a form of an array
-            $stmt->execute([$p['gpon'], $p['name'], $p['model'], $p['sn'], $p['desc'], $p['olt'], $p['pos'], $p['tcont'], $p['gemport']]);
-            $totalUpdates += $stmt->rowCount();
-        }
+            $totalUpdates = 0;
+            //for ($i = 0; $i < count($p); $i++) {
+            foreach ($onu as $p) {
+                // All seven parameters are passed into the execute() in a form of an array
+                $stmt->execute([$p['gpon'], $p['name'], $p['model'], $p['sn'], $p['desc'], $p['olt'], $p['pos'], $p['tcont'], $p['gemport']]);
+                $totalUpdates += $stmt->rowCount();
+            }
 
-        if ($totalUpdates > 0) {
-            return $this->pdo->commit();
-        } else {
-            return $this->pdo->rollBack();
-        }
+            if ($totalUpdates > 0) {
+                return $this->pdo->commit();
+            } else {
+                return $this->pdo->rollBack();
+            }
         } catch (Exception $e) {
-            return $this->pdo->rollBack(); 
+            error_log("[onuProfile::insertOnus] Lote completo descartado por excepción: " . $e->getMessage());
+            return $this->pdo->rollBack();
         }
     }
     public function insertOnu($p, $olt)
