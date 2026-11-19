@@ -902,7 +902,6 @@ class OnuDb extends DbConn
                 ON s.StatusId = p.Status
                 INNER JOIN olts_list ol 
                 ON ol.OltIdApi = o.OntOlt 
-                WHERE o.OntOlt = 6 
                 ORDER BY o.OntId";
 
         $result = $this->pdo->prepare($query);
