@@ -55,7 +55,7 @@ class profileOnu
                 array_push($params, $row[0], $row[1], $row[2]);
             }
             try {
-                $this->pdo->prepare("INSERT INTO historial_potencia (IdOnu, RxOnu, HFecha) VALUES $placeholders")->execute($params);
+                $this->pdo->prepare("INSERT INTO historial_potencia_new (IdOnu, RxOnu, HFecha) VALUES $placeholders")->execute($params);
             } catch (\Throwable $e) {
                 error_log("[profileOnu::flushRxHistory] Fallo en lote: " . $e->getMessage());
             }
@@ -189,12 +189,11 @@ class profileOnu
      * oportunidad). Un proceso hijo sí puede matarse desde afuera sin
      * depender de que coopere.
      */
-    private function getProfileAislado(string $oltIdApi, int $timeoutSegundos): ?array
+    private function getProfileAislado(string $oltIdApi, int $timeoutSegundos, string $modo = 'profile'): ?array
     {
         $phpBinary = PHP_BINARY;
         $script = __DIR__ . '/../../../cron/tasks/fetch_olt_profile.php';
-        $cmd = [$phpBinary, $script, (string) $oltIdApi, $modo];   // <-- $modo
-
+        $cmd = [$phpBinary, $script, (string) $oltIdApi, $modo];
 
         // Archivos temporales para stdout/stderr del hijo. Nombre único
         // por llamada (tempnam) para que corridas/OLTs concurrentes o

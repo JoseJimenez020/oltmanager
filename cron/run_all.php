@@ -81,7 +81,7 @@ try {
         $dias = HISTORIAL_POTENCIA_RETENCION_DIAS;
         $totalEliminadas = 0;
         $stmt = $pdo->prepare(
-            "DELETE FROM historial_potencia WHERE HFecha < (NOW() - INTERVAL :dias DAY) LIMIT 5000"
+            "DELETE FROM historial_potencia_new WHERE HFecha < (NOW() - INTERVAL :dias DAY) LIMIT 5000"
         );
         do {
             $stmt->bindValue(':dias', $dias, PDO::PARAM_INT);

@@ -10,7 +10,7 @@
  * localizar los ~537s que quedaban sin explicar en el ciclo completo.
  */
 
-set_time_limit(600);
+set_time_limit(0);
 ini_set('max_execution_time', 600);
 
 require_once(__DIR__ . '/../../app/metodos/onuProfile/profileOnu.php');

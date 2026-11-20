@@ -56,7 +56,7 @@ try {
     $sql = "WITH lecturas AS (
             SELECT hp.IdOnu, hp.RxOnu, hp.HFecha,
                    LAG(hp.RxOnu) OVER (PARTITION BY hp.IdOnu ORDER BY hp.HFecha) AS RxAnterior
-            FROM historial_potencia hp
+            FROM historial_potencia_new hp
             WHERE hp.HFecha >= (NOW() - INTERVAL :ventanaHoras HOUR)
         ),
         eventos_por_onu AS (
@@ -68,7 +68,7 @@ try {
         ),
         extremos AS (
             SELECT IdOnu, MIN(HFecha) AS PrimeraFecha, MAX(HFecha) AS UltimaFecha
-            FROM historial_potencia
+            FROM historial_potencia_new
             WHERE HFecha >= (NOW() - INTERVAL :ventanaHoras2 HOUR)
             GROUP BY IdOnu
         )
@@ -84,9 +84,9 @@ try {
         INNER JOIN onu o          ON o.OntId = ext.IdOnu
         INNER JOIN gpon g         ON g.IdOlt = o.OntGpon
         INNER JOIN olts_list ol   ON ol.OltIdApi = o.OntOlt
-        INNER JOIN historial_potencia hp_prev
+        INNER JOIN historial_potencia_new hp_prev
             ON hp_prev.IdOnu = ext.IdOnu AND hp_prev.HFecha = ext.PrimeraFecha
-        INNER JOIN historial_potencia hp_curr
+        INNER JOIN historial_potencia_new hp_curr
             ON hp_curr.IdOnu = ext.IdOnu AND hp_curr.HFecha = ext.UltimaFecha
         LEFT JOIN eventos_por_onu e ON e.IdOnu = ext.IdOnu
         WHERE COALESCE(e.TotalEventos, 0) >= 1";

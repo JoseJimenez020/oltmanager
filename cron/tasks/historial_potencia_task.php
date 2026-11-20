@@ -13,7 +13,7 @@ $db = new DbConn();
 $pdo = $db->getPdo();
 
 $stmt = $pdo->prepare(
-    'INSERT INTO historial_potencia (IdOnu, RxOnu, HFecha) VALUES (:id, :rx, :fecha)'
+    'INSERT INTO historial_potencia_new (IdOnu, RxOnu, HFecha) VALUES (:id, :rx, :fecha)'
 );
 
 date_default_timezone_set('America/Merida');
