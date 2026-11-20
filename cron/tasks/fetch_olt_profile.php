@@ -49,17 +49,22 @@ if (!$oltIdApi) {
     exit(1);
 }
 
+$modo = $argv[2] ?? 'profile';
 $resultado = null;
 
 try {
-    $m = new profileOnu();
-    // getProfile() es autosuficiente por OLT: no depende de self::$ol ni
-    // self::$gpon (esos son estado compartido de getProfiles()/formatOnu()
-    // en el proceso padre; no se necesitan ni están disponibles aquí, ya
-    // que cada subproceso es una instancia de PHP completamente separada).
-    $resultado = $m->getProfile($oltIdApi);
+    if ($modo === 'vlan') {
+        // Solo el walk SNMP; el procesamiento (getVlansOnus) se hace en el padre
+        $snmp = new nSnmp($oltIdApi, 'read');
+        $s = new profileOnuS($snmp);
+        $resultado = $s->getWalk('VLAN');
+        $s->close();
+    } else {
+        $m = new profileOnu();
+        $resultado = $m->getProfile($oltIdApi);
+    }
 } catch (\Throwable $e) {
-    fwrite(STDERR, "[fetch_olt_profile] Excepción para OLT $oltIdApi: " . $e->getMessage() . "\n");
+    fwrite(STDERR, "[fetch_olt_profile] Excepción para OLT $oltIdApi ($modo): " . $e->getMessage() . "\n");
     $resultado = null;
 }
 

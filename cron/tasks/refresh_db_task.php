@@ -30,6 +30,8 @@ try {
     $m = new profileOnu();
     $m->setOlt();
 
+    $m->setGponOnu();
+
     // Ya logueado internamente por OLT (profileOnu::getProfiles)
     $profile = $m->getProfiles();
 
@@ -48,7 +50,6 @@ try {
 
     $t = microtime(true);
     $m->unsetGponOnu();
-    $m->setGponOnu();
     refreshDbTask_log('setGponOnu (2a llamada, tras insertOnus)', $t);
 
     $t = microtime(true);
@@ -60,7 +61,12 @@ try {
 
     $t = microtime(true);
     $new  = $m->newVlans($update, $vlans);
-    $vlan = $m->insertVlans($new);
+    $vlan = false;
+    if (!empty($update['nuevo'])) {
+        $vlans = $m->getVlans();
+        $new   = $m->newVlans($update, $vlans);
+        $vlan  = $m->insertVlans($new);
+    }
     refreshDbTask_log('newVlans + insertVlans', $t);
 
     $t = microtime(true);

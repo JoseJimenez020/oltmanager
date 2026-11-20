@@ -146,9 +146,8 @@ class onuProfile extends DbConn
             $this->pdo->beginTransaction();
 
             // Prepare statement
-            $stmt = $this->pdo->prepare('INSERT 
-                                INTO onu (OntGpon, OntNombre, OntModelo,OnuSn, OntZona,OntOlt,OntPos,OntSpeedUp,OntSpeedDown) 
-                                VALUES (?,?,?,?,?,?,?,?,?)');
+            $stmt = $this->pdo->prepare('INSERT IGNORE INTO onu (...) VALUES (?,?,?,?,?,?,?,?,?)');
+            
             $totalUpdates = 0;
             //for ($i = 0; $i < count($p); $i++) {
             foreach ($onu as $p) {

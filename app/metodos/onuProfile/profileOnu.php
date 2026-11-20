@@ -111,14 +111,12 @@ class profileOnu
         $vlans = [];
         foreach (self::$ol as $v) {
             $inicio = microtime(true);
-            $snmp = new nSnmp($v['OltIdApi'], 'read');
-            $s = new profileOnuS($snmp);
-            $vlanS = $s->getWalk('VLAN');
-            $s->close();
+            $vlanS = $this->getProfileAislado((string) $v['OltIdApi'], 120, 'vlan');
             $elapsed = round(microtime(true) - $inicio, 2);
-            error_log("[profileOnu::getVlans] OLT {$v['OltName']} tardo {$elapsed}s");
+            $etiqueta = empty($vlanS) ? ' (FALLO/TIMEOUT/vacío, se omite)' : '';
+            error_log("[profileOnu::getVlans] OLT {$v['OltName']} tardo {$elapsed}s{$etiqueta}");
             if (empty($vlanS))
-                continue;
+                continue;   // <-- restaurado
             $vl = $this->vlan->getVlansOnus(self::$gpon, $vlanS, $v['OltIdApi']);
             $vlans = array_merge($vlans, $vl);
             set_time_limit(300);
@@ -195,7 +193,8 @@ class profileOnu
     {
         $phpBinary = PHP_BINARY;
         $script = __DIR__ . '/../../../cron/tasks/fetch_olt_profile.php';
-        $cmd = [$phpBinary, $script, (string) $oltIdApi];
+        $cmd = [$phpBinary, $script, (string) $oltIdApi, $modo];   // <-- $modo
+
 
         // Archivos temporales para stdout/stderr del hijo. Nombre único
         // por llamada (tempnam) para que corridas/OLTs concurrentes o
@@ -342,6 +341,9 @@ class profileOnu
     public function formatOnu($onu)
     {
         $sn = self::$gpon;
+        if (empty($sn)) {
+            throw new \RuntimeException('self::$gpon vacío: falta setGponOnu() antes de formatOnu()');
+        }
         $resultado = ['existe' => [], 'migracion' => [], 'nuevo' => []];
         date_default_timezone_set('America/Merida');
         $fecha = date('Y-m-d H:i:s');
